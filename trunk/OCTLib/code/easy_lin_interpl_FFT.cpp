@@ -26,11 +26,11 @@ DllExport I8 OL_easy_lin_int_fft(U32, U32, U32, U32, DBL, DBL, I8, I8, DBL *,
 /* easy linear interpolation + FFT main function
   PURPOSE:
     calculate FFT (using fftw_plan_r2r_1d() function call from FFTW library) for
-    RAW B-scan [1] converted into linear wavenumber-space (k-space) from linear
+    RAW B-scan [1] converted into linear wavenumber space (k-space) from linear
     wavelength space using linear interpolation [2].
     NOTE! For spectral domain optical coherence tomography (SD-OCT) the spectrum
-    can be less RAW A-line, define the range to select only spectrum part of
-    each RAW A-line through start_index and end_index parameters
+    can be less RAW A-line, thus, define the range to select only spectrum part
+    of each RAW A-line within start_index and end_index parameters.
   
   INPUTS:
     X - number of elements in each row (RAW A-line size)
@@ -39,7 +39,7 @@ DllExport I8 OL_easy_lin_int_fft(U32, U32, U32, U32, DBL, DBL, I8, I8, DBL *,
     end_index - last index for spectrum (right RAW A-line cut-off)
     start_wavelength - start of wavelength range for laser
     end_wavelength - end of wavelength range for laser
-    hann_flag - flag for Hanning window [2]
+    hann_flag - flag for Hanning window [3]
     dB_flag - flag for scale: linear or dB (20log())
     in - pointer to buffer with RAW B-scan before FFT (size: X * Y)
   
@@ -60,7 +60,7 @@ DllExport I8 OL_easy_lin_int_fft(U32, U32, U32, U32, DBL, DBL, I8, I8, DBL *,
   
   REFERENCES:
     [1] http://www.fftw.org/fftw3_doc/Real_002dto_002dReal-Transforms.html
-    [2] http://code.google.com/p/rosmir/wiki/Linear_Interpolation
+    [2] http://en.wikipedia.org/wiki/Linear_interpolation
     [3] http://en.wikipedia.org/wiki/Hann_function 
 */
 I8 OL_easy_lin_int_fft(U32 X, U32 Y, U32 start_index, U32 end_index,

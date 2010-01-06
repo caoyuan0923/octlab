@@ -51,8 +51,8 @@ DllExport I8 OL_fft_dbl(U32, U32, I8, I8,  DBL *, DBL *, DBL *, DBL *, DBL *);
     should be interpolated into linear k-space before taking FFT. Thus, consider
     the FFT from lin_interpl_FFT.cpp, MZI_FFT.cpp, and spline_FFT.cpp files for
     OCT RAW data acquired in non-linear and/or non-equispaced k-space.
-    note also that in some realizations of SD-OCT and SS-OCT the OCT raw data
-    already can be linear and equispaced in k-space
+    note also that in some realizations of FD-OCT the OCT raw data already can
+    be linear and equispaced in k-space
   
   REFERENCES:
     [1] http://www.fftw.org/fftw3_doc/Real_002dto_002dReal-Transforms.html

@@ -42,8 +42,8 @@ DllExport I8 OL_spline_fft_dbl(U32, U32, U32, U32, I8, I8, DBL *, DBL *, DBL *,
     calculate FFT (using fftw_plan_r2r_1d() function call from FFTW library) for
     RAW B-scan pre-processed using known (actual) laser spectrum (wavelengths vs
     time/spatial indexes) [1]. This function converts each RAW OCT A-line into
-    linear wavenumber-space (k-space) using spline interpolation from nonlinear
-    in wavenumber-space defined by actual laser spectrum (wavelengths vs
+    linear wavenumber space (k-space) using spline interpolation from nonlinear
+    in wavenumber space defined by actual laser spectrum (wavelengths vs
     time/spatial indexes) [2]. Read description for lin_interpl_FFT.cpp file for
     more details.
   

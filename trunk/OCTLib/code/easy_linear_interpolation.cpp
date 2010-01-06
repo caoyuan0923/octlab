@@ -40,7 +40,7 @@ DllExport I8 OL_easy_linear_interpl(U32, U32, DBL, DBL, DBL *, DBL *);
     easy_lin_interpl_FFT.cpp file.
   
   REFERENCES:
-    [1] http://code.google.com/p/rosmir/wiki/Linear_Interpolation
+    [1] http://en.wikipedia.org/wiki/Linear_interpolation
 */
 I8 OL_easy_linear_interpl(U32 X, U32 Y, DBL start_wavelength,
                           DBL end_wavelength, DBL *in, DBL *out) {

@@ -43,7 +43,7 @@ DllExport I8 OL_linear_interpl(U32, U32, DBL *, DBL *, DBL *);
     lin_interpl_FFT.cpp file.
   
   REFERENCES:
-    [1] http://code.google.com/p/rosmir/wiki/Linear_Interpolation
+    [1] http://en.wikipedia.org/wiki/Linear_interpolation
 */
 I8 OL_linear_interpl(U32 X, U32 Y, DBL *spectrum, DBL *in, DBL *out) {
   I32 i, j;
