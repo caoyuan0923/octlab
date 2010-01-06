@@ -41,12 +41,12 @@ DllExport I8 OL_lin_int_fft_dbl(U32, U32, U32, U32, I8, I8, DBL *, DBL *, DBL *,
     calculate FFT (using fftw_plan_r2r_1d() function call from FFTW library) for
     RAW B-scan pre-processed using known (actual) laser spectrum (wavelengths vs
     time/spatial indexes) [1]. This function converts each RAW OCT A-line into
-    linear wavenumber-space (k-space) using linear interpolation from nonlinear
-    in wavenumber-space defined by actual laser spectrum (wavelengths vs
+    linear wavenumber space (k-space) using linear interpolation from nonlinear
+    in wavenumber space defined by actual laser spectrum (wavelengths vs
     time/spatial indexes) [2][3]. NOTE! For Fourier domain optical coherence
     tomography (FD-OCT) the actual spectrum can cover the part of RAW A-line.
     Thus, define the range to select only spectrum part of each RAW A-line
-    through start_index and end_index parameters, the actual laser spectrum
+    within start_index and end_index parameters, the actual laser spectrum
     (wavelengths vs time/spatial indexes) should be obtained for the same range
     indexes.
   
@@ -87,7 +87,7 @@ DllExport I8 OL_lin_int_fft_dbl(U32, U32, U32, U32, I8, I8, DBL *, DBL *, DBL *,
   
   REFERENCES:
     [1] http://www.fftw.org/fftw3_doc/Real_002dto_002dReal-Transforms.html
-    [2] http://code.google.com/p/rosmir/wiki/Linear_Interpolation
+    [2] http://en.wikipedia.org/wiki/Linear_interpolation
     [3] M. Wojtkowski, R. Leitgeb, A. Kowalczyk, T. Bajraszewski,
     and A. Fercher, "In vivo human retinal imaging by Fourier domain optical
     coherence tomography", J. Biomed. Opt. 7, 457 (2002)
