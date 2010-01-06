@@ -17,7 +17,23 @@ extern "C" {
 DllExport I8 OL_simple_threshold(U32, DBL, DBL, DBL *);
 }
 
-// simple Threshold main function
+/* simple threshold main function
+  PURPOSE:
+    make data filtering. Value is kept if it is inside defined range
+    (min...max), otherwise all values above max value are changed to max value,
+    and all values below min value are changed to min value.
+  
+  INPUTS:
+    SIZE - number of elements in buffer (B-scan)
+    min - minimal value to check and to assigned
+    max - maximum value to check and to assigned
+  
+  OUTPUTS:
+    out - pointer to buffer with filtered B-scan after FFT (size: SIZE)
+  
+  REMARKS:
+    note this function is useful to filter structural, intensity OCT B-scans.
+*/
 I8 OL_simple_threshold(U32 SIZE, DBL min, DBL max, DBL *ptr) {
   I32 i;
   #pragma omp parallel for default(shared) private(i)
