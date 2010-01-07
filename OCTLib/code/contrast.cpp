@@ -14,42 +14,61 @@
 
 // for DLL export
 extern "C" {
-DllExport DBL OL_contrast(U32, DBL *);
-DllExport I8 OL_contrast_map(U32, U32, U32, DBL *, DBL *);
+DllExport I8 OL_contrast_map(U32, U32, U32, U32, DBL *, DBL *);
 }
 
-/* speckle contrast main function
+/* OL_contrast_map main function
   PURPOSE:
-    calculate speckle contrast (K):
+    calculate speckle contrast K for spatially sliding 2D window within B-scan:
       K = SD(I)/<I>
       where K is speckle contrast, SD(I) is sample standard deviation with
       Bessel's correction, <I> is mean value for input intensity
       distribution (I).
   
   INPUTS:
-    SIZE - total number of elements
-    ptr - pointer to buffer with intensity values
+    X - number of elements in each row (A-scan size)
+    Y - number of rows (# of A-scans)
+    x_r - horizontal radius, defines width of 2D sliding window (2 * x_r + 1)
+    y_r - vertical radius, defines height of 2D sliding window (2 * y_r + 1)
+    in - pointer to buffer with B-scan after FFT (size: X * Y)
   
   OUTPUTS:
-    contrast value
+    out - pointer to buffer with results (size: (X - 2 * x_r) * (Y - 2 * y_r))
   
   REFERENCES:
     [1] http://en.wikipedia.org/wiki/Speckle_pattern
     [2] http://wifi.bli.uci.edu/?page=LSI
     [3] http://en.wikipedia.org/wiki/Bessel's_correction
 */
-DBL OL_contrast(U32 SIZE, DBL *ptr) {
-  DBL mean_value = accumulate(ptr, ptr + SIZE, 0.0) / SIZE;
-  DBL sum_value = 0.0;
-  for (DBL *t = ptr; t < ptr + SIZE; t++)
-    sum_value = sum_value + (*t - mean_value) * (*t - mean_value);
-  return sqrt(sum_value / (SIZE - 1)) / mean_value;
-}
-DBL (*fp_contrast)(U32, DBL *) = OL_contrast;
-
-/************OL_contrast_map************/
-I8 OL_contrast_map(U32 X, U32 Y, U32 radius, DBL *lineIN, DBL *lineOUT) {
-  return rsm_frame(X, Y, radius, lineIN, lineOUT, fp_contrast);
+I8 OL_contrast_map(U32 X, U32 Y, U32 x_r, U32 y_r, DBL *in, DBL *out) {
+  U32 d = X - 2 * x_r, x_d = 2 * x_r + 1, y_d = 2 * y_r + 1, size = x_d * y_d;
+  I32 x, y;
+  // parallel run by elements
+  #pragma omp parallel for default(shared) private(x, y)
+  for (x = 0; x < static_cast<I32>(d); x++) {  // horizontal
+    for (y = 0; y < static_cast<I32>(Y - 2 * y_r); y++) {  // vertical
+      DBL mean = 0.0;
+      // loop for mean
+      for (U32 i = x; i < x_d + x; i++) {
+        for (U32 j = 0, pos = y * X + i; j < y_d; j++, pos = pos + X) {
+          // sum
+          mean = mean + in[pos];
+        }
+      }
+      mean = mean / size;
+      DBL  tmp = 0.0;
+      // loop for contrast
+      for (U32 i = x; i < x_d + x; i++) {
+        for (U32 j = 0, pos = y * X + i; j < y_d; j++, pos = pos + X) {
+          // sum^2
+          tmp = tmp + (in[pos] - mean) * (in[pos] - mean);
+        }
+      }
+      // fill out
+      out[y * d + x] = sqrt(tmp / (size - 1)) / mean;
+    }
+  }  // end of parallel code
+  return EXIT_SUCCESS;
 }
 
 /*******************************************************************************

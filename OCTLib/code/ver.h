@@ -12,8 +12,8 @@
 #ifndef __VER_H__
 #define __VER_H__
 
-#define OCTLIB_VER  0,0,0,9
-#define OCTLIB_VER_STRING "0.0.0.9\0"
+#define OCTLIB_VER  0,0,1,0
+#define OCTLIB_VER_STRING "0.0.1.0\0"
 #ifdef WIN32
   #define OCTLIB_DLL_STRING "OCTLib.dll"
 #else
