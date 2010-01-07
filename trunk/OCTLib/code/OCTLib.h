@@ -59,30 +59,6 @@ typedef pair<DBL, I32>  DI_Pair;
 /******************************************************************************/
 // global functions
 
-/************rsm_frame************/
-template <typename T1, typename T2>
-I8 rsm_frame(U32 X, U32 Y, U32 radius, T2 *lineIN, T1 *lineOUT,
-             T1 (*fp)(U32, T2 *)) {
-  U32 r2 = 2 * radius, x_d = X - r2, d = r2 + 1, size = d * d;
-  I32 k;
-  // parallel run by columns
-  #pragma omp parallel for default(shared) private(k)
-  for (k = 0; k < static_cast<I32>(x_d); k++) {
-    T2 *line = new T2[size];
-    for (U32 y = 0, pos = k, pos2 = 0; y < r2;
-         y++, pos = pos + X, pos2 = pos2 + d) {
-      copy(lineIN + pos, lineIN + pos + d, line + pos2);
-    }
-    for (U32 y = r2, pos = r2 * X + k, pos2 = k; y < Y;
-         y++, pos = pos + X, pos2 = pos2 + x_d) {
-      copy(lineIN + pos, lineIN + pos + d, line + d * (y % d));
-      lineOUT[pos2] = fp(size, line);
-    }
-    delete [] line;
-  }  // end of parallel code
-  return EXIT_SUCCESS;
-}
-
 /************rsm_frame2************/
 template <typename T1, typename T2>
 I8 rsm_frame2(U32 X, U32 Y, U32 radius, T2 *line_1, T2 *line_2, T1 *lineOUT,
