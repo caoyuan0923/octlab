@@ -14,29 +14,43 @@
 
 // for DLL export
 extern "C" {
-DllExport DBL OL_pearson(U32, DBL *, DBL *);
-DllExport I8  OL_pearson_map(U32, U32, U32, DBL *, DBL *, DBL *);
+DllExport I8 OL_pearson_map(U32, U32, U32, U32, DBL *, DBL *, DBL *);
 }
 
-// speckle pearson coefficient main function
-DBL OL_pearson(U32 SIZE, DBL *ptr1, DBL *ptr2) {
-  DBL sum_value1 = 0.0, sum_value2 = 0.0, sum_value3 = 0.0;
-  DBL mean_value1 = accumulate(ptr1, ptr1 + SIZE, 0.0) / SIZE;
-  DBL mean_value2 = accumulate(ptr2, ptr2 + SIZE, 0.0) / SIZE;
-
-  for (DBL *t1 = ptr1, *t2 = ptr2; t1 < ptr1 + SIZE; t1++, t2++) {
-    sum_value1 = sum_value1 + (*t1 - mean_value1) * (*t1 - mean_value1);
-    sum_value2 = sum_value2 + (*t2 - mean_value2) * (*t2 - mean_value2);
-    sum_value3 = sum_value3 + (*t1 - mean_value1) * (*t2 - mean_value2);
-  }
-  return (SIZE * sum_value3) / ((SIZE - 1) * sqrt(sum_value1 * sum_value2));
-}
-DBL (*fp_pearson)(U32, DBL *, DBL *) = OL_pearson;
-
-/************OL_pearson_map************/
-I8 OL_pearson_map(U32 X, U32 Y, U32 radius, DBL *line1, DBL *line2,
-                  DBL *lineOUT) {
-  return rsm_frame2(X, Y, radius, line1, line2, lineOUT, fp_pearson);
+I8 OL_pearson_map(U32 X, U32 Y, U32 x_r, U32 y_r, DBL *in1, DBL *in2,
+                  DBL *out) {
+  U32 d = X - 2 * x_r, x_d = 2 * x_r + 1, y_d = 2 * y_r + 1, size = x_d * y_d;
+  I32 x, y;
+  // parallel run by elements
+  #pragma omp parallel for default(shared) private(x, y)
+  for (x = 0; x < static_cast<I32>(d); x++) {  // horizontal
+    for (y = 0; y < static_cast<I32>(Y - 2 * y_r); y++) {  // vertical
+      DBL mean1 = 0.0, mean2 = 0.0;
+      // loop for mean
+      for (U32 i = x; i < x_d + x; i++) {
+        for (U32 j = 0, pos = y * X + i; j < y_d; j++, pos = pos + X) {
+          // sum1 & sum2
+          mean1 = mean1 + in1[pos];
+          mean2 = mean2 + in2[pos];
+        }
+      }
+      mean1 = mean1 / size;
+      mean2 = mean2 / size;
+      DBL sum1 = 0.0, sum2 = 0.0, sum12 = 0.0;
+      // loop for pearson
+      for (U32 i = x; i < x_d + x; i++) {
+        for (U32 j = 0, pos = y * X + i; j < y_d; j++, pos = pos + X) {
+          // sum^2
+            sum1 = sum1 + (in1[pos] - mean1) * (in1[pos] - mean1);
+            sum2 = sum2 + (in2[pos] - mean2) * (in2[pos] - mean2);
+          sum12 = sum12 + (in1[pos] - mean1) * (in2[pos] - mean2);
+        }
+      }
+      // fill out
+      out[y * d + x] = sum12 / (sqrt(sum1 * sum2));
+    }
+  }  // end of parallel code
+  return EXIT_SUCCESS;
 }
 
 /*******************************************************************************
