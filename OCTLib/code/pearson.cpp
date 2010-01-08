@@ -17,6 +17,25 @@ extern "C" {
 DllExport I8 OL_pearson_map(U32, U32, U32, U32, DBL *, DBL *, DBL *);
 }
 
+/* OL_pearson_map main function
+  PURPOSE:
+    calculate Pearson product-moment correlation coefficient for spatially
+    sliding 2D window within B-scan [1].
+  
+  INPUTS:
+    X - number of elements in each row (A-scan size)
+    Y - number of rows (# of A-scans)
+    x_r - horizontal radius, defines width of 2D sliding window (2 * x_r + 1)
+    y_r - vertical radius, defines height of 2D sliding window (2 * y_r + 1)
+    in1 - pointer to first buffer with B-scan after FFT (size: X * Y)
+    in2 - pointer to second buffer with another B-scan after FFT (size: X * Y)
+  
+  OUTPUTS:
+    out - pointer to buffer with results (size: (X - 2 * x_r) * (Y - 2 * y_r))
+  
+  REFERENCES:
+    [1] http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient
+*/
 I8 OL_pearson_map(U32 X, U32 Y, U32 x_r, U32 y_r, DBL *in1, DBL *in2,
                   DBL *out) {
   U32 d = X - 2 * x_r, x_d = 2 * x_r + 1, y_d = 2 * y_r + 1, size = x_d * y_d;
@@ -25,29 +44,21 @@ I8 OL_pearson_map(U32 X, U32 Y, U32 x_r, U32 y_r, DBL *in1, DBL *in2,
   #pragma omp parallel for default(shared) private(x, y)
   for (x = 0; x < static_cast<I32>(d); x++) {  // horizontal
     for (y = 0; y < static_cast<I32>(Y - 2 * y_r); y++) {  // vertical
-      DBL mean1 = 0.0, mean2 = 0.0;
-      // loop for mean
-      for (U32 i = x; i < x_d + x; i++) {
-        for (U32 j = 0, pos = y * X + i; j < y_d; j++, pos = pos + X) {
-          // sum1 & sum2
-          mean1 = mean1 + in1[pos];
-          mean2 = mean2 + in2[pos];
-        }
-      }
-      mean1 = mean1 / size;
-      mean2 = mean2 / size;
-      DBL sum1 = 0.0, sum2 = 0.0, sum12 = 0.0;
+      DBL sum_x = 0.0, sum_y = 0.0, sumxy = 0.0, sumx2 = 0.0, sumy2 = 0.0;
       // loop for pearson
       for (U32 i = x; i < x_d + x; i++) {
         for (U32 j = 0, pos = y * X + i; j < y_d; j++, pos = pos + X) {
-          // sum^2
-            sum1 = sum1 + (in1[pos] - mean1) * (in1[pos] - mean1);
-            sum2 = sum2 + (in2[pos] - mean2) * (in2[pos] - mean2);
-          sum12 = sum12 + (in1[pos] - mean1) * (in2[pos] - mean2);
+            sum_x = sum_x + in1[pos];
+            sum_y = sum_y + in2[pos];
+            sumxy = sumxy + in1[pos] * in2[pos];
+            sumx2 = sumx2 + in1[pos] * in1[pos];
+            sumy2 = sumy2 + in2[pos] * in2[pos];
         }
       }
       // fill out
-      out[y * d + x] = sum12 / (sqrt(sum1 * sum2));
+      out[y * d + x] = (size * sumxy - sum_x * sum_y) / \
+                       (sqrt((size * sumx2 - sum_x * sum_x) * \
+                       (size * sumy2 - sum_y * sum_y)));
     }
   }  // end of parallel code
   return EXIT_SUCCESS;
