@@ -14,7 +14,7 @@
 
 // for DLL export
 extern "C" {
-DllExport I8  OL_mean_map(U32, U32, U32, U32, DBL *, DBL *);
+DllExport I8 OL_mean_map(U32, U32, U32, U32, DBL *, DBL *);
 }
 
 /* OL_mean_map main function
