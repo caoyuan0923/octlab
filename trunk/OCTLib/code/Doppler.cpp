@@ -39,7 +39,8 @@ DllExport I8 OL_doppler(U32, U32, U32, U32, DBL *, DBL *, DBL *);
   REFERENCES:
     [1] C. Kasai, K. Namekawa, A. Koyano, and R. Omoto, "Real-time
     two-dimensional blood flow imaging using an autocorrelation technique",
-    IEEE Trans. Sonics. Ultrason. 32, 458-464 (1985)
+    IEEE Trans. Sonics. Ultrason. 32, 458-464 (1985). You can obtain it from
+    http://server.elektro.dtu.dk/personal/jaj/31545/documents/kasai_et_al_1985.pdf
     [2] V.X.D. Yang and I.A. Vitkin, Principles of Doppler Optical Coherence
     Tomography, in Handbook of Optical Coherence Tomography in Cardiology,
     edited by Evelyn Regar, Ton van Leeuwen and Patrick Serruys (Taylor and
