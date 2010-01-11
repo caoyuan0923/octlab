@@ -17,7 +17,31 @@ extern "C" {
 DllExport I8 OL_phase_calibration(U32, U32, U32, DBL *, DBL *);
 }
 
-// phase calibration main function
+/* phase calibration main function
+  PURPOSE:
+    calculate corrected phase based on phase information from calibration mirror
+    [1].
+  
+  INPUTS:
+    X - number of elements in each row (A-scan size)
+    Y - number of rows (# of A-scans)
+    level - the depth position of calibration mirror reflector
+    ref - pointer to buffer with phase B-scan after FFT from calibration mirror
+    (size: X * Y)
+  
+  OUTPUTS:
+    out - pointer to buffer with phase B-scan after FFT from sample
+    (size: X * Y)
+  
+  REMARKS:
+    note that for all depth indexes below level the phase correction is taken
+    without calibration coefficient.
+  
+  REFERENCES:
+    [1] B. J. Vakoc, S. H. Yun, J. F. de Boer, G. J. Tearney, and B. E. Bouma,
+    "Phase-resolved optical frequency domain imaging", Opt. Express 13,
+    5483-5493 (2005)
+*/
 I8 OL_phase_calibration(U32 X, U32 Y, U32 level, DBL *ref, DBL *ptr) {
   I32 i, j;
   #pragma omp parallel for default(shared) private(i, j)

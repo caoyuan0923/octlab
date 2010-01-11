@@ -20,7 +20,7 @@ extern "C" {
 DllExport I8 OL_simple_doppl_fl(U32, U32, DBL, DBL, DBL *, DBL *);
 }
 
-/* simple Doppler with filtering OCT main function
+/* simple Doppler OCT with filtering main function
   PURPOSE:
     calculate Doppler frequency shifts by subtracting successive phase OCT
     A-scans, then filter obtained phase differences based on intensity

@@ -76,7 +76,8 @@ DllExport I8 OL_mzi_fft_dbl(U32, U32, U32, I8, I8,  U32 *, DBL *, DBL *, DBL *,
     [1] http://www.fftw.org/fftw3_doc/Real_002dto_002dReal-Transforms.html
     [2] R. Huber, M. Wojtkowski, J.G. Fujimoto, J. Y. Jiang, and A. E. Cable,
     "Three-dimensional and C-mode OCT imaging with a compact, frequency swept
-    laser source at 1300 nm", Opt. Express 13, 10523 (2005)
+    laser source at 1300 nm", Opt. Express 13, 10523 (2005). You can obtain it
+    from https://www.thorlabs.com/OCT/files/Optics_Express_Fujimoto_2005.pdf
     [3] http://en.wikipedia.org/wiki/Hann_function
 */
 template <typename T1>
