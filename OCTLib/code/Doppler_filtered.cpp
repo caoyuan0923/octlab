@@ -22,8 +22,8 @@ DllExport I8 OL_doppler_fltr(U32, U32, U32, U32, DBL, DBL, DBL *, DBL *, DBL *,
   PURPOSE:
     calculate Doppler frequency shifts using Kasai autocorrelation function
     for spatially sliding 2D window within B-scan, then filter obtained phases
-    based on intensity information.  If intensity is out of defined range phase
-    is zero. Read description for Doppler.cpp file for more details.
+    based on intensity information. If intensity is out of defined range the
+    phase is zero. Read description for Doppler.cpp file for more details.
   
   INPUTS:
     X - number of elements in each row (A-scan size)

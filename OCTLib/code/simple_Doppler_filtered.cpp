@@ -20,7 +20,28 @@ extern "C" {
 DllExport I8 OL_simple_doppl_fl(U32, U32, DBL, DBL, DBL *, DBL *);
 }
 
-// simple Doppler with filtering main function
+/* simple Doppler with filtering OCT main function
+  PURPOSE:
+    calculate Doppler frequency shifts by subtracting successive phase OCT
+    A-scans, then filter obtained phase differences based on intensity
+    information. If intensity is out of defined range the phase difference is
+    zero. Read description for simple_Doppler.cpp file for more details.
+  
+  INPUTS:
+    X - number of elements in each row (A-scan size)
+    Y - number of rows (# of A-scans)
+    min - minimum value for intensity range
+    max - maximum value for intensity range
+    ref - pointer to buffer with intensities, structure B-scan after FFT
+    (size: X * Y)
+  
+  OUTPUTS:
+    ptr - pointer to buffer with phases (with phase differences after function
+    processing) (size: X * Y)
+  
+  REMARKS:
+    note that last row will contain ZEROs
+*/
 I8 OL_simple_doppl_fl(U32 X, U32 Y, DBL min, DBL max, DBL *ref, DBL *ptr) {
   I32 i;
 
