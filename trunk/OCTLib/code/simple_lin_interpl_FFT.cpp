@@ -9,7 +9,7 @@
 *  in the COPYRIGHT.TXT file
 *******************************************************************************/
 
-// standart headers
+// standard headers
 #include <functional>
 #include <algorithm>
 #include <map>
@@ -36,6 +36,33 @@ DllExport I8 OL_smpl_lin_fft_dbl(U32, U32, U32, U32, I8, I8, DBL *, DBL *,
                                  DBL *, DBL *);
 }
 
+/* simple linear interpolation + FFT main function
+  PURPOSE:
+    calculate simple FFT (using fftw_plan_r2r_1d() function call from FFTW
+    library) for RAW B-scan pre-processed using known (actual) laser spectrum
+    (wavelengths vs time/spatial indexes). Read description for
+    lin_interpl_FFT.cpp file for more details.
+  
+  INPUTS:
+    X - number of elements in each row (RAW A-line size)
+    Y - number of rows (# of RAW A-lines)
+    start_index - first index for spectrum (left RAW A-line cut-off)
+    end_index - last index for spectrum (right RAW A-line cut-off)
+    hann_flag - flag for Hanning window [4]
+    dB_flag - flag for scale: linear or dB (20log())
+    spectrum - pointer to line with spectrum in wavelengths (nm)
+    in - pointer to buffer with RAW B-scan before FFT (size: X * Y)
+  
+  OUTPUTS:
+    intensity - pointer to buffer contained intensities, structural B-scan
+    (size: ((end_index - start_index) / 2) * Y)
+    phase - pointer to buffer contained phases, phase B-scan
+    (size: ((end_index - start_index) / 2) * Y)
+  
+  RREMARKS:
+    note that this function does not return Im and Re parts after FFT. Use
+    lin_interpl_FFT.cpp file to obtain them.
+*/
 template <typename T1>
 I8 simple_lin_fft(U32 X, U32 Y, U32 start_index, U32 end_index, I8 hann_flag,
                   I8 dB_flag, DBL *spectrum, T1 *in, DBL *intensity,

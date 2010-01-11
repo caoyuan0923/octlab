@@ -9,7 +9,7 @@
 *  in the COPYRIGHT.TXT file
 *******************************************************************************/
 
-// standart headers
+// standard headers
 #include <functional>
 #include <algorithm>
 // common header
@@ -17,7 +17,31 @@
 // need for FFT analysis
 #include "./fftw3.h"
 
-// for DLL export
+/* simple MZI + FFT main function
+  PURPOSE:
+    calculate simple FFT (using fftw_plan_r2r_1d() function call from FFTW
+    library) for RAW B-scan pre-processed using k-clock or k-space clock
+    approach. Read description for MZI_FFT.cpp file for more details.
+  
+  INPUTS:
+    X - number of elements in each row (RAW A-line size)
+    Y - number of rows (# of RAW A-lines)
+    mzi_length - number of MZI indexes
+    hann_flag - flag for Hanning window
+    dB_flag - flag for scale: linear or dB (20log())
+    mzi_indexes - MZI indexes
+    in - pointer to buffer with RAW B-scan before FFT (size: X * Y)
+  
+  OUTPUTS:
+    intensity - pointer to buffer contained intensities, structural B-scan
+    (size: (mzi_length / 2) * Y)
+    phase - pointer to buffer contained phases, phase B-scan
+    (size: (mzi_length / 2) * Y)
+  
+    REMARKS:
+    note that this function does not return Im and Re parts after FFT. Use
+    MZI_FFT.cpp file to obtain them.
+*/
 extern "C" {
 DllExport I8 OL_simple_mzi_fft_i16(U32, U32, U32, I8, I8,  U32 *, I16 *, DBL *,
                                    DBL *);

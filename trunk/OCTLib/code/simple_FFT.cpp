@@ -9,7 +9,7 @@
 *  in the COPYRIGHT.TXT file
 *******************************************************************************/
 
-// standart headers
+// standard headers
 #include <functional>
 #include <algorithm>
 // common header
@@ -30,7 +30,7 @@ DllExport I8 OL_simple_fft_dbl(U32, U32, I8, I8,  DBL *, DBL *, DBL *);
 /* simple FFT main function
   PURPOSE:
     calculate simple FFT (using fftw_plan_r2r_1d() function call from FFTW
-    library) for RAW B-scan [1]
+    library) for RAW B-scan without data pre-processing [1]
   
   INPUTS:
     X - number of elements in each row (RAW A-line size)
@@ -43,6 +43,10 @@ DllExport I8 OL_simple_fft_dbl(U32, U32, I8, I8,  DBL *, DBL *, DBL *);
     intensity - pointer to buffer contained intensities, structural B-scan
     (size: (X / 2) * Y)
     phase - pointer to buffer contained phases, phase B-scan (size: (X / 2) * Y)
+  
+  REMARKS:
+    note that this function does not return Im and Re parts after FFT. Use
+    FFT.cpp file to obtain them.
   
   REFERENCES:
     [1] http://www.fftw.org/fftw3_doc/Real_002dto_002dReal-Transforms.html
