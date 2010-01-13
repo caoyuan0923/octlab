@@ -17,7 +17,7 @@ extern "C" {
 DllExport I8 OL_contrast_map(U32, U32, U32, U32, DBL *, DBL *);
 }
 
-/* OL_contrast_map main function
+/* contrast_map main function
   PURPOSE:
     calculate speckle contrast K for spatially sliding 2D window within B-scan:
       K = SD(I)/<I>
@@ -38,7 +38,8 @@ DllExport I8 OL_contrast_map(U32, U32, U32, U32, DBL *, DBL *);
   REFERENCES:
     [1] http://en.wikipedia.org/wiki/Speckle_pattern
     [2] http://wifi.bli.uci.edu/?page=LSI
-    [3] http://en.wikipedia.org/wiki/Bessel's_correction
+    [3] http://en.wikipedia.org/wiki/Coefficient_of_variation
+    [4] http://en.wikipedia.org/wiki/Bessel's_correction
 */
 I8 OL_contrast_map(U32 X, U32 Y, U32 x_r, U32 y_r, DBL *in, DBL *out) {
   U32 d = X - 2 * x_r, x_d = 2 * x_r + 1, y_d = 2 * y_r + 1, size = x_d * y_d;

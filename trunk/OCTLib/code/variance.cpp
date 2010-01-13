@@ -14,12 +14,12 @@
 
 // for DLL export
 extern "C" {
-DllExport I8 OL_mean_map(U32, U32, U32, U32, DBL *, DBL *);
+DllExport I8 OL_variance_map(U32, U32, U32, U32, DBL *, DBL *);
 }
 
-/* mean_map main function
+/* OL_variance_map main function
   PURPOSE:
-    calculate mean function [1] for spatially sliding 2D window within B-scan.
+    calculate speckle variance for spatially sliding 2D window within B-scan.
   
   INPUTS:
     X - number of elements in each row (A-scan size)
@@ -32,24 +32,29 @@ DllExport I8 OL_mean_map(U32, U32, U32, U32, DBL *, DBL *);
     out - pointer to buffer with results (size: (X - 2 * x_r) * (Y - 2 * y_r))
   
   REFERENCES:
-    [1] http://en.wikipedia.org/wiki/Mean
+    [1] http://en.wikipedia.org/wiki/Variance
+    [2] http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
+    [3] http://en.wikipedia.org/wiki/Bessel's_correction
 */
-I8 OL_mean_map(U32 X, U32 Y, U32 x_r, U32 y_r, DBL *in, DBL *out) {
+I8 OL_variance_map(U32 X, U32 Y, U32 x_r, U32 y_r, DBL *in, DBL *out) {
   U32 d = X - 2 * x_r, x_d = 2 * x_r + 1, y_d = 2 * y_r + 1, size = x_d * y_d;
   I32 x, y;
   // parallel run by elements
   #pragma omp parallel for default(shared) private(x, y)
   for (x = 0; x < static_cast<I32>(d); x++) {  // horizontal
     for (y = 0; y < static_cast<I32>(Y - 2 * y_r); y++) {  // vertical
-      DBL tmp = 0.0;
+      DBL sum = 0.0, sum2 = 0.0;
+      // loop for mean
       for (U32 i = x; i < x_d + x; i++) {
         for (U32 j = 0, pos = y * X + i; j < y_d; j++, pos = pos + X) {
           // sum
-          tmp = tmp + in[pos];
+          sum = sum + in[pos];
+          // sum^2
+          sum2 = sum2 + in[pos] * in[pos];
         }
       }
       // fill out
-      out[y * d + x] = tmp / size;
+      out[y * d + x] = (sum2 - sum * sum / size) / (size - 1);
     }
   }  // end of parallel code
   return EXIT_SUCCESS;
