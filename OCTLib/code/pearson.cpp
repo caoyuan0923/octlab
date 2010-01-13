@@ -17,7 +17,7 @@ extern "C" {
 DllExport I8 OL_pearson_map(U32, U32, U32, U32, DBL *, DBL *, DBL *);
 }
 
-/* OL_pearson_map main function
+/* pearson_map main function
   PURPOSE:
     calculate Pearson product-moment correlation coefficient for spatially
     sliding 2D window within B-scan [1].
