@@ -82,6 +82,8 @@ I8 spline_fft(U32 X, U32 Y, U32 start_index, U32 end_index, I8 hann_flag,
               I8 dB_flag, DBL *spectrum, T1 *in, DBL *intensity, DBL *phase,
               DBL *Re, DBL *Im) {
   U32 size = end_index - start_index;
+  // simple checks
+  if (size < 2) return EXIT_FAILURE;
   DBL *hann_win = static_cast<DBL *>(fftw_malloc(sizeof(DBL) * size));
   DBL *XXX = static_cast<DBL *>(fftw_malloc(sizeof(DBL) * size));
   // create FFTW plan

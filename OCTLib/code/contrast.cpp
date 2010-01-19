@@ -42,11 +42,13 @@ DllExport I8 OL_contrast_map(U32, U32, U32, U32, DBL *, DBL *);
     [4] http://en.wikipedia.org/wiki/Bessel's_correction
 */
 I8 OL_contrast_map(U32 X, U32 Y, U32 x_r, U32 y_r, DBL *in, DBL *out) {
-  U32 d = X - 2 * x_r, x_d = 2 * x_r + 1, y_d = 2 * y_r + 1, size = x_d * y_d;
-  I32 x, y;
+  U32 x_d = 2 * x_r + 1, y_d = 2 * y_r + 1, size = x_d * y_d;
+  I32 x, y, d = X - 2 * x_r;
+  // simple checks
+  if (size < 2) return EXIT_FAILURE;
   // parallel run by elements
   #pragma omp parallel for default(shared) private(x, y)
-  for (x = 0; x < static_cast<I32>(d); x++) {  // horizontal
+  for (x = 0; x < d; x++) {  // horizontal
     for (y = 0; y < static_cast<I32>(Y - 2 * y_r); y++) {  // vertical
       DBL mean = 0.0;
       // loop for mean
@@ -66,6 +68,8 @@ I8 OL_contrast_map(U32 X, U32 Y, U32 x_r, U32 y_r, DBL *in, DBL *out) {
         }
       }
       // fill out
+      // simple check
+      if (mean == 0.0) mean = 1.0;
       out[y * d + x] = sqrt(tmp / (size - 1)) / mean;
     }
   }  // end of parallel code

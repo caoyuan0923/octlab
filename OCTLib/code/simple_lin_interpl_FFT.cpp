@@ -69,18 +69,19 @@ I8 simple_lin_fft(U32 X, U32 Y, U32 start_index, U32 end_index, I8 hann_flag,
                   DBL *phase) {
   // initialize map
   map<DBL, I32> spectrum_map;
-  U32 size = end_index - start_index;
+  I32 size = end_index - start_index;
+  // simple checks
+  if (size < 3) return EXIT_FAILURE;
   DBL *hann_win = static_cast<DBL *>(fftw_malloc(sizeof(DBL) * size));
   I32 *li = static_cast<I32 *>(fftw_malloc(sizeof(I32) * (size - 2)));
   DBL *p = static_cast<DBL *>(fftw_malloc(sizeof(DBL) * (size - 2)));
   // create FFTW plan
   fftw_plan fft_p = fftw_plan_r2r_1d(size, intensity, phase, FFTW_R2HC,
                     FFTW_ESTIMATE);
-  U32 width = static_cast<U32>(size/2);
+  I32 width = static_cast<I32>(size/2);
   I32 j, z;
   // load wavelength spectrum
-  for (z = 0; z < static_cast<I32>(size); z++)
-    spectrum_map.insert(DI_Pair(spectrum[z], z));
+  for (z = 0; z < size; z++) spectrum_map.insert(DI_Pair(spectrum[z], z));
   DBL start_wavenumber = 1 / spectrum[0];
   // linear wavenumber step
   DBL wavenumber_step = (start_wavenumber - (1 / spectrum[size - 1])) / \
@@ -93,7 +94,7 @@ I8 simple_lin_fft(U32 X, U32 Y, U32 start_index, U32 end_index, I8 hann_flag,
   // Hanning window for all other elements and coefficients and indexes for
   // linear interpolation
   #pragma omp parallel for default(shared) private(z)
-  for (z = 1; z < static_cast<I32>(size - 1); z++) {
+  for (z = 1; z < size - 1; z++) {
     if (hann_flag)
       hann_win[z] = 0.5 * (1 - cos(kTwoPi * z / size));
     else
@@ -119,7 +120,7 @@ I8 simple_lin_fft(U32 X, U32 Y, U32 start_index, U32 end_index, I8 hann_flag,
     tmp_fft_in[size - 1] = hann_win[size - 1] * in[_pos + size - 1];
     // linear interpolation
     // new value for calculated nonlinear wavelength but linear in wavenumber
-    for (U32 i = 0; i < size - 2; i++)
+    for (I32 i = 0; i < size - 2; i++)
       tmp_fft_in[i + 1] = hann_win[i + 1] * ((1 - p[i]) * in[_pos + li[i]] + \
                           p[i] * in[_pos + li[i] + 1]);
     // perform FFT using FFTW3 library
@@ -131,7 +132,7 @@ I8 simple_lin_fft(U32 X, U32 Y, U32 start_index, U32 end_index, I8 hann_flag,
       intensity[pos] = tmp_fft_out[0];
     phase[pos] = 0.0;
     // construct intensity and phase information
-    for (U32 pos1 = 1, pos2 = size - 1; pos1 < width; pos1++, pos2--) {
+    for (I32 pos1 = 1, pos2 = size - 1; pos1 < width; pos1++, pos2--) {
       // intensity
       if (dB_flag)
         intensity[pos + pos1] = 20 * log10(sqrt(tmp_fft_out[pos1] * \

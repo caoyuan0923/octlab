@@ -48,12 +48,11 @@ DllExport I8 OL_doppler(U32, U32, U32, U32, DBL *, DBL *, DBL *);
     http://www.uhnres.utoronto.ca/labs/biophotonics/staff_papers/vitkin/Doppler_OCT_book_chapter_2007.pdf
 */
 I8 OL_doppler(U32 X, U32 Y, U32 x_r, U32 y_r, DBL *Re, DBL *Im, DBL *out) {
-  U32 d = X - 2 * x_r, x_d = 2 * x_r + 1, y_d = 2 * y_r + 1,
-    shift = (Y - y_d) * d;
-  I32 x, y;
+  I32 x, y, d = X - 2 * x_r;
+  U32 x_d = 2 * x_r + 1, y_d = 2 * y_r + 1, shift = (Y - y_d) * d;
   // parallel run by elements
   #pragma omp parallel for default(shared) private(x, y)
-  for (x = 0; x < static_cast<I32>(d); x++) {  // horizontal
+  for (x = 0; x < d; x++) {  // horizontal
     for (y = 0; y < static_cast<I32>(Y - y_d); y++) {  // vertical
       DBL tmp_1 = 0.0, tmp_2 = 0.0;
       for (U32 i = x; i < x_d + x; i++) {
