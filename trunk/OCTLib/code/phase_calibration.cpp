@@ -44,6 +44,8 @@ DllExport I8 OL_phase_calibration(U32, U32, U32, DBL *, DBL *);
 */
 I8 OL_phase_calibration(U32 X, U32 Y, U32 level, DBL *ref, DBL *ptr) {
   I32 i, j;
+  // simple checks
+  if (level < 1) return EXIT_FAILURE;
   #pragma omp parallel for default(shared) private(i, j)
   for (i = 0; i < static_cast<I32>(Y); i++)
     for (j =  0; j < static_cast<I32>(X); j++)

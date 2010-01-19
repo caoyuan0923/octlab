@@ -61,6 +61,8 @@ DllExport I8 OL_simple_mzi_fft_dbl(U32, U32, U32, I8, I8,  U32 *, DBL *, DBL *,
 template <typename T1>
 I8 simple_mzi_fft(U32 X, U32 Y, U32 mzi_length, I8 hann_flag, I8 dB_flag,
                   U32 *mzi_indexes, T1 *in, DBL *intensity, DBL *phase) {
+  // simple checks
+  if (mzi_length < 2) return EXIT_FAILURE;
   DBL *hann_win = static_cast<DBL *>(fftw_malloc(sizeof(DBL) * mzi_length));
   // create FFTW plan
   fftw_plan fft_p = fftw_plan_r2r_1d(mzi_length, intensity, phase, FFTW_R2HC,
