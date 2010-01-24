@@ -9,8 +9,6 @@
 *  in the COPYRIGHT.TXT file
 *******************************************************************************/
 
-// standard header
-#include <numeric>
 // common header
 #include "./OCTLib.h"
 
@@ -36,41 +34,44 @@ DllExport I8 OL_contrast_map_fl_M(U32, U32, U32, U32, DBL, DBL, DBL *, DBL *);
     in - pointer to buffer with B-scan after FFT (size: X * Y)
   
   OUTPUTS:
-    out - pointer to buffer with results (size: ((X - offset) / stripsize) * Y)
+    out - pointer to buffer with results (size: ((Y - offset) / stripsize) * X)
 */
 I8 OL_contrast_map_fl_M(U32 X, U32 Y, U32 stripsize, U32 offset, DBL min,
                         DBL max, DBL *in, DBL *out) {
   // simple checks
   if (stripsize < 2) return EXIT_FAILURE;
-  I32 d = (X - offset) / stripsize;
+  I32 d = (Y - offset) / stripsize;
   if (d < 2) return EXIT_FAILURE;
   I32 x, y;
   // parallel run by elements
   #pragma omp parallel for default(shared) private(x, y)
-  for (x = 0; x < d; x++) {  // horizontal
-    for (y = 0; y < static_cast<I32>(Y); y++) {  // vertical
+  for (x = 0; x < static_cast<I32>(X); x++) {  // horizontal
+    for (y = 0; y < d; y++) {  // vertical
       DBL mean = 0.0;
       // loop for mean
-      for (U32 i = x * stripsize; i < (x + 1) * stripsize; i++) {
-        mean = mean + in[y * X + i + offset];
+      for (U32 j = 0, pos = (y * stripsize + offset) * X + x; j < stripsize;
+           j++, pos = pos + X) {
+        // sum
+        mean = mean + in[pos];
       }
       mean = mean / stripsize;
       // fill out
       if (mean > max)
-        out[y * d + x] = 0.0;
+        out[y * X + x] = 0.0;
       else
         if (mean < min) {
-          out[y * d + x] = 0.0;
+          out[y * X + x] = 0.0;
         } else {
           DBL  tmp = 0.0;
           // loop for contrast
-          for (U32 i = x * stripsize; i < (x + 1) * stripsize; i++) {
-            tmp = tmp + (in[y * X + i + offset] - mean) * \
-                  (in[y * X + i + offset] - mean);
+          for (U32 j = 0, pos = (y * stripsize + offset) * X + x; j < stripsize;
+               j++, pos = pos + X) {
+            // sum^2
+            tmp = tmp + (in[pos] - mean) * (in[pos] - mean);
           }
-          // simple checks
+          // simple check
           if (mean == 0.0) mean = 1.0;
-          out[y * d + x] = sqrt(tmp / (stripsize - 1)) / mean;
+          out[y * X + x] = sqrt(tmp / (stripsize - 1)) / mean;
         }
     }
   }  // end of parallel code
