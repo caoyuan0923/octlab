@@ -25,8 +25,10 @@ DllExport I8 OL_pearson_map(U32, U32, U32, U32, DBL *, DBL *, DBL *);
   INPUTS:
     X - number of elements in each row (A-scan size)
     Y - number of rows (# of A-scans)
-    x_r - horizontal radius, defines width of 2D sliding window (2 * x_r + 1)
-    y_r - vertical radius, defines height of 2D sliding window (2 * y_r + 1)
+    x_r - cell height (Fortran-style), defines width of 2D sliding window
+    (C-style)
+    y_r - cell width (Fortran-style), defines height of 2D sliding window
+    (C-style)
     in1 - pointer to first buffer with B-scan after FFT (size: X * Y)
     in2 - pointer to second buffer with another B-scan after FFT (size: X * Y)
   

@@ -38,7 +38,7 @@ DllExport I8 OL_doppler_fltr_M(U32, U32, U32, U32, DBL, DBL, DBL *, DBL *,
     Im - pointer to buffer with imaginary part of B-scan after FFT (size: X * Y)
   
   OUTPUTS:
-    out - pointer to buffer with results (size: ((X - offset) / stripsize) * Y)
+    out - pointer to buffer with results (size: ((Y - offset) / stripsize) * X)
   
   REMARKS:
     note that last row will contain ZEROs
@@ -47,33 +47,32 @@ I8 OL_doppler_fltr_M(U32 X, U32 Y, U32 stripsize, U32 offset, DBL min, DBL max,
                      DBL *intensity, DBL *Re, DBL *Im, DBL *out) {
   // simple checks
   if (stripsize < 2) return EXIT_FAILURE;
-  I32 d = (X - offset) / stripsize;
+  I32 d = (Y - offset) / stripsize;
   if (d < 2) return EXIT_FAILURE;
   DBL _max = max * stripsize, _min = min * stripsize;
-  I32 x, y, shift = (Y - 1) * d;
+  I32 x, y, shift = (d - 1) * X;
   // parallel run by elements
   #pragma omp parallel for default(shared) private(x, y)
-  for (x = 0; x < d; x++) {  // horizontal
-    for (y = 0; y < static_cast<I32>(Y - 1); y++) {  // vertical
+  for (x = 0; x < static_cast<I32>(X); x++) {  // horizontal
+    for (y = 0; y < d - 1; y++) {  // vertical
       DBL tmp_1 = 0.0, tmp_2 = 0.0, sum = 0.0;
-      for (U32 i = x * stripsize; i < (x + 1) * stripsize; i++) {
+      for (U32 j = 0, pos = (y * stripsize + offset) * X + x; j < stripsize;
+           j++, pos = pos + X) {
         // Q(m)I(m+1) - I(m)Q(m+1)
-        tmp_1 = tmp_1 + Im[y * X + i + offset] * Re[(y + 1) * X + i + offset] -\
-                Re[y * X + i + offset] * Im[(y + 1) * X + i + offset];
+        tmp_1 = tmp_1 + Im[pos] * Re[pos + X] - Re[pos] * Im[pos + X];
         // Q(m)Q(m+1) + I(m)I(m+1)
-        tmp_2 = tmp_2 + Im[y * X + i + offset] * Im[(y + 1) * X + i + offset] +\
-                Re[y * X + i + offset] * Re[(y + 1) * X + i + offset];
+        tmp_2 = tmp_2 + Im[pos] * Im[pos + X] + Re[pos] * Re[pos + X];
         // mean value
-        sum = sum + intensity[y * X + i + offset];
+        sum = sum + intensity[pos];
       }
       // fill out
       if (sum > _max)
-        out[y * d + x] = 0.0;
+        out[y * X + x] = 0.0;
       else
         if (sum < _min)
-          out[y * d + x] = 0.0;
+          out[y * X + x] = 0.0;
         else
-          out[y * d + x] = atan2(tmp_1, tmp_2);
+          out[y * X + x] = atan2(tmp_1, tmp_2);
     }
     // zero filling
     out[shift + x] = 0.0;
