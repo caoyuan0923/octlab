@@ -39,9 +39,6 @@ DllExport I8 OL_doppler_fltr_M(U32, U32, U32, U32, DBL, DBL, DBL *, DBL *,
   
   OUTPUTS:
     out - pointer to buffer with results (size: ((Y - offset) / stripsize) * X)
-  
-  REMARKS:
-    note that last row will contain ZEROs
 */
 I8 OL_doppler_fltr_M(U32 X, U32 Y, U32 stripsize, U32 offset, DBL min, DBL max,
                      DBL *intensity, DBL *Re, DBL *Im, DBL *out) {
@@ -49,14 +46,14 @@ I8 OL_doppler_fltr_M(U32 X, U32 Y, U32 stripsize, U32 offset, DBL min, DBL max,
   if (stripsize < 2) return EXIT_FAILURE;
   I32 d = (Y - offset) / stripsize;
   if (d < 2) return EXIT_FAILURE;
-  DBL _max = max * stripsize, _min = min * stripsize;
-  I32 x, y, shift = (d - 1) * X;
+  DBL _max = max * (stripsize - 1), _min = min * (stripsize - 1);
+  I32 x, y;
   // parallel run by elements
   #pragma omp parallel for default(shared) private(x, y)
   for (x = 0; x < static_cast<I32>(X); x++) {  // horizontal
-    for (y = 0; y < d - 1; y++) {  // vertical
+    for (y = 0; y < d; y++) {  // vertical
       DBL tmp_1 = 0.0, tmp_2 = 0.0, sum = 0.0;
-      for (U32 j = 0, pos = (y * stripsize + offset) * X + x; j < stripsize;
+      for (U32 j = 0, pos = (y * stripsize + offset) * X + x; j < stripsize - 1;
            j++, pos = pos + X) {
         // Q(m)I(m+1) - I(m)Q(m+1)
         tmp_1 = tmp_1 + Im[pos] * Re[pos + X] - Re[pos] * Im[pos + X];
@@ -74,8 +71,6 @@ I8 OL_doppler_fltr_M(U32 X, U32 Y, U32 stripsize, U32 offset, DBL min, DBL max,
         else
           out[y * X + x] = atan2(tmp_1, tmp_2);
     }
-    // zero filling
-    out[shift + x] = 0.0;
   }  // end of parallel code
   return EXIT_SUCCESS;
 }

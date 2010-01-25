@@ -28,9 +28,9 @@ DllExport I8 OL_doppler_fltr(U32, U32, U32, U32, DBL, DBL, DBL *, DBL *, DBL *,
   INPUTS:
     X - number of elements in each row (A-scan size)
     Y - number of rows (# of A-scans)
-    x_r - cell height (Fortran-style), defines width of 2D sliding window
+    x_d - cell height (Fortran-style), defines width of 2D sliding window
     (C-style)
-    y_r - cell width (Fortran-style), defines height of 2D sliding window
+    y_d - cell width (Fortran-style), defines height of 2D sliding window
     (C-style)
     min - minimum value for intensity range
     max - maximum value for intensity range
@@ -40,20 +40,20 @@ DllExport I8 OL_doppler_fltr(U32, U32, U32, U32, DBL, DBL, DBL *, DBL *, DBL *,
     Im - pointer to buffer with imaginary part of B-scan after FFT (size: X * Y)
   
   OUTPUTS:
-    out - pointer to buffer with results (size: (X - 2 * x_r) * (Y - 2 * y_r))
+    out - pointer to buffer with results (size: (X - x_d) * (Y - y_d))
   
   REMARKS:
     note that last row will contain ZEROs
 */
-I8 OL_doppler_fltr(U32 X, U32 Y, U32 x_r, U32 y_r, DBL min, DBL max,
+I8 OL_doppler_fltr(U32 X, U32 Y, U32 x_d, U32 y_d, DBL min, DBL max,
                    DBL *intensity, DBL *Re, DBL *Im, DBL *out) {
-  I32 x, y, d = X - 2 * x_r;
-  U32 x_d = 2 * x_r + 1, y_d = 2 * y_r + 1, shift = (Y - y_d) * d;
+  I32 x, y, d = X - x_d;
+  U32 shift = (Y - y_d - 1) * d;
   DBL _max = max * x_d * y_d, _min = min * x_d * y_d;
   // parallel run by elements
   #pragma omp parallel for default(shared) private(x, y)
   for (x = 0; x < d; x++) {  // horizontal
-    for (y = 0; y < static_cast<I32>(Y - y_d); y++) {  // vertical
+    for (y = 0; y < static_cast<I32>(Y - y_d - 1); y++) {  // vertical
       DBL tmp_1 = 0.0, tmp_2 = 0.0, sum = 0.0;
       for (U32 i = x; i < x_d + x; i++) {
         for (U32 j = 0, pos = y * X + i; j < y_d; j++, pos = pos + X) {

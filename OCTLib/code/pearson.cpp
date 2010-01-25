@@ -25,27 +25,29 @@ DllExport I8 OL_pearson_map(U32, U32, U32, U32, DBL *, DBL *, DBL *);
   INPUTS:
     X - number of elements in each row (A-scan size)
     Y - number of rows (# of A-scans)
-    x_r - cell height (Fortran-style), defines width of 2D sliding window
+    x_d - cell height (Fortran-style), defines width of 2D sliding window
     (C-style)
-    y_r - cell width (Fortran-style), defines height of 2D sliding window
+    y_d - cell width (Fortran-style), defines height of 2D sliding window
     (C-style)
     in1 - pointer to first buffer with B-scan after FFT (size: X * Y)
     in2 - pointer to second buffer with another B-scan after FFT (size: X * Y)
   
   OUTPUTS:
-    out - pointer to buffer with results (size: (X - 2 * x_r) * (Y - 2 * y_r))
+    out - pointer to buffer with results (size: (X - x_d) * (Y - y_d))
   
   REFERENCES:
     [1] http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient
 */
-I8 OL_pearson_map(U32 X, U32 Y, U32 x_r, U32 y_r, DBL *in1, DBL *in2,
+I8 OL_pearson_map(U32 X, U32 Y, U32 x_d, U32 y_d, DBL *in1, DBL *in2,
                   DBL *out) {
-  U32 x_d = 2 * x_r + 1, y_d = 2 * y_r + 1, size = x_d * y_d;
-  I32 x, y, d = X - 2 * x_r;
+  U32 size = x_d * y_d;
+  I32 x, y, d = X - x_d;
+  // simple checks
+  if (size < 2) return EXIT_FAILURE;
   // parallel run by elements
   #pragma omp parallel for default(shared) private(x, y)
   for (x = 0; x < d; x++) {  // horizontal
-    for (y = 0; y < static_cast<I32>(Y - 2 * y_r); y++) {  // vertical
+    for (y = 0; y < static_cast<I32>(Y - y_d); y++) {  // vertical
       DBL sum_x = 0.0, sum_y = 0.0, sumxy = 0.0, sumx2 = 0.0, sumy2 = 0.0;
       // loop for pearson
       for (U32 i = x; i < x_d + x; i++) {
