@@ -73,7 +73,7 @@ DllExport I8 OL_lin_int_fft_dbl(U32, U32, U32, U32, I8, I8, DBL *, DBL *, DBL *,
   REMARKS:
     note that the spectrum should be provided in wavelengths for the range
     [start_wavelength ... end_wavelength) and contain (end_index - start_index)
-    elements
+    elements (new indexes are [0 ... (end_index - start_index - 1)])
     note that this function can be applied for SD-OCT data as well as for SS-OCT
     data. In both cases the actual spectrum in wavelengths should be measured.
     note that in case of hardware k-clock, or k-space clock (k-trigger) the A/Q
