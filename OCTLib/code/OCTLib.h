@@ -44,14 +44,16 @@ const double kTwoPi = 6.28318530717958623;
 // define some type defs and variables
 // NOTE!!! avoid any defines in other source files!!!
 
-typedef unsigned char   U8;   // 1 byte
-typedef unsigned short  U16;  // 2 bytes
-typedef unsigned long   U32;  // 4 bytes
-typedef signed char     I8;   // 1 byte
-typedef short           I16;  // 2 bytes
-typedef int             I32;  // 4 bytes
-typedef float           SGL;  // 4 bytes
-typedef double          DBL;  // 8 bytes
+typedef unsigned __int8      U8;   // 1 byte
+typedef unsigned __int16     U16;  // 2 bytes
+typedef unsigned __int32     U32;  // 4 bytes
+typedef unsigned __int64     U64;  // 4 bytes
+typedef          __int8      I8;   // 1 byte
+typedef          __int16     I16;  // 2 bytes
+typedef          __int32     I32;  // 4 bytes
+typedef          __int64     I64;  // 8 bytes
+typedef float                SGL;  // 4 bytes
+typedef double               DBL;  // 8 bytes
 typedef pair<DBL, I32>  DI_Pair;
 
 /******************************************************************************/
