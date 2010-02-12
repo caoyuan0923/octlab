@@ -58,13 +58,8 @@ I8 OL_variance_map_fl_M(U32 X, U32 Y, U32 stripsize, U32 offset, DBL min,
         sum2 = sum2 + in[pos] * in[pos];
       }
       // fill out
-      if (sum > _max)
-        out[y * X + x] = 0.0;
-      else
-        if (sum < _min)
-          out[y * X + x] = 0.0;
-        else
-          out[y * X + x] = (sum2 - sum * sum / stripsize) / (stripsize - 1);
+      if ((sum > _max) || (sum < _min)) out[y * X + x] = 0.0;
+      else out[y * X + x] = (sum2 - sum * sum / stripsize) / (stripsize - 1);
     }
   }  // end of parallel code
   return EXIT_SUCCESS;

@@ -66,13 +66,8 @@ I8 OL_doppler_fltr(U32 X, U32 Y, U32 x_d, U32 y_d, DBL min, DBL max,
         }
       }
       // fill out
-      if (sum > _max)
-        out[y * d + x] = 0.0;
-      else
-        if (sum < _min)
-          out[y * d + x] = 0.0;
-        else
-          out[y * d + x] = atan2(tmp_1, tmp_2);
+      if ((sum > _max) || (sum < _min)) out[y * d + x] = 0.0;
+      else out[y * d + x] = atan2(tmp_1, tmp_2);
     }
     // zero filling
     out[shift + x] = 0.0;
