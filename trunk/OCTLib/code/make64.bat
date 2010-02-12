@@ -9,7 +9,7 @@ set EXCLUDE.2=peak_width
 
 echo.
 
-@ for %%A in (*.cpp) do cl /O2 /favor:AMD64 /EHsc /GL /fp:fast /Fo"../bin/" /I"../include/" /D "WIN64" /D "NDEBUG" /c /W4 /nologo /MT /openmp %%A
+@ for %%A in (*.cpp) do cl /O2 /favor:INTEL64 /EHsc /GL /fp:fast /Fo"../bin/" /I"../include/" /D "WIN64" /D "NDEBUG" /c /W4 /nologo /MT /openmp %%A
 @ for /f "usebackq delims==. tokens=1-3" %%i in (`set EXCLUDE`) do del "../bin/%%k.obj"
 rc /i "../include/" /d "NDEBUG" /d "WIN64" /l 0x409 /fo"../bin/%MYPROG%.res" OCTLib.rc
 link /DLL /NOASSEMBLY /LIBPATH:../lib libfftw3-3-x64.lib /OPT:REF /MACHINE:X64 /NOLOGO /LTCG /OUT:../bin/%MYPROG%.dll ../bin/*.obj ../bin/%MYPROG%.res
