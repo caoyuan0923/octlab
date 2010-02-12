@@ -63,13 +63,8 @@ I8 OL_doppler_fltr_M(U32 X, U32 Y, U32 stripsize, U32 offset, DBL min, DBL max,
         sum = sum + intensity[pos];
       }
       // fill out
-      if (sum > _max)
-        out[y * X + x] = 0.0;
-      else
-        if (sum < _min)
-          out[y * X + x] = 0.0;
-        else
-          out[y * X + x] = atan2(tmp_1, tmp_2);
+      if ((sum > _max) || (sum < _min)) out[y * X + x] = 0.0;
+      else out[y * X + x] = atan2(tmp_1, tmp_2);
     }
   }  // end of parallel code
   return EXIT_SUCCESS;

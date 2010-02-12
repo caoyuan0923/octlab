@@ -58,24 +58,21 @@ I8 OL_contrast_map_fl(U32 X, U32 Y, U32 x_d, U32 y_d, DBL min, DBL max, DBL *in,
       }
       mean = mean / size;
       // fill out
-      if (mean > max)
+      if ((mean > max) || (mean < min)) {
         out[y * d + x] = 0.0;
-      else
-        if (mean < min) {
-          out[y * d + x] = 0.0;
-        } else {
-          DBL  tmp = 0.0;
-          // loop for contrast
-          for (U32 i = x; i < x_d + x; i++) {
-            for (U32 j = 0, pos = y * X + i; j < y_d; j++, pos = pos + X) {
-              // sum^2
-              tmp = tmp + (in[pos] - mean) * (in[pos] - mean);
-            }
+      } else {
+        DBL  tmp = 0.0;
+        // loop for contrast
+        for (U32 i = x; i < x_d + x; i++) {
+          for (U32 j = 0, pos = y * X + i; j < y_d; j++, pos = pos + X) {
+            // sum^2
+            tmp = tmp + (in[pos] - mean) * (in[pos] - mean);
           }
-          // simple check
-          if (mean == 0.0) mean = 1.0;
-          out[y * d + x] = sqrt(tmp / (size - 1)) / mean;
         }
+        // simple check
+        if (mean == 0.0) mean = 1.0;
+        out[y * d + x] = sqrt(tmp / (size - 1)) / mean;
+      }
     }
   }  // end of parallel code
   return EXIT_SUCCESS;
