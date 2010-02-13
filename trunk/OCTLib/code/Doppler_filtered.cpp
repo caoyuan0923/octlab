@@ -48,29 +48,34 @@ DllExport I8 OL_doppler_fltr(U32, U32, U32, U32, DBL, DBL, DBL *, DBL *, DBL *,
 I8 OL_doppler_fltr(U32 X, U32 Y, U32 x_d, U32 y_d, DBL min, DBL max,
                    DBL *intensity, DBL *Re, DBL *Im, DBL *out) {
   I32 x, y, d = X - x_d;
-  U32 shift = (Y - y_d - 1) * d;
+  I32 shift = (Y - y_d - 1) * d;
   DBL _max = max * x_d * y_d, _min = min * x_d * y_d;
   // parallel run by elements
   #pragma omp parallel for default(shared) private(x, y)
   for (x = 0; x < d; x++) {  // horizontal
     for (y = 0; y < static_cast<I32>(Y - y_d - 1); y++) {  // vertical
+      U32 pos = y * X;
       DBL tmp_1 = 0.0, tmp_2 = 0.0, sum = 0.0;
       for (U32 i = x; i < x_d + x; i++) {
-        for (U32 j = 0, pos = y * X + i; j < y_d; j++, pos = pos + X) {
+        for (DBL *ptr1 = Im + pos + i, *ptr2 = Re + pos + i,
+             *ptr3 = intensity + pos + i; ptr1 < Im + pos + i + y_d * X;
+             ptr1 = ptr1 + X, ptr2 = ptr2 + X, ptr3 = ptr3 + X) {
           // Q(m)I(m+1) - I(m)Q(m+1)
-          tmp_1 = tmp_1 + Im[pos] * Re[pos + X] - Re[pos] * Im[pos + X];
+          tmp_1 = tmp_1 + (*ptr1) * (*(ptr2 + X)) - (*ptr2) * (*(ptr1 + X));
           // Q(m)Q(m+1) + I(m)I(m+1)
-          tmp_2 = tmp_2 + Im[pos] * Im[pos + X] + Re[pos] * Re[pos + X];
+          tmp_2 = tmp_2 + (*ptr1) * (*(ptr1 + X)) + (*ptr2) * (*(ptr2 + X));
           // mean value
-          sum = sum + intensity[pos];
+          sum = sum + (*ptr3);
         }
       }
       // fill out
-      if ((sum > _max) || (sum < _min)) out[y * d + x] = 0.0;
-      else out[y * d + x] = atan2(tmp_1, tmp_2);
+      if ((sum > _max) || (sum < _min))
+        *(out + y * d + x) = 0.0;
+      else
+        *(out + y * d + x) = atan2(tmp_1, tmp_2);
     }
     // zero filling
-    out[shift + x] = 0.0;
+    *(out + shift + x) = 0.0;
   }  // end of parallel code
   return EXIT_SUCCESS;
 }
