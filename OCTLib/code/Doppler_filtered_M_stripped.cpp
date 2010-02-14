@@ -53,18 +53,22 @@ I8 OL_doppler_fltr_M(U32 X, U32 Y, U32 stripsize, U32 offset, DBL min, DBL max,
   for (x = 0; x < static_cast<I32>(X); x++) {  // horizontal
     for (y = 0; y < d; y++) {  // vertical
       DBL tmp_1 = 0.0, tmp_2 = 0.0, sum = 0.0;
-      for (U32 j = 0, pos = (y * stripsize + offset) * X + x; j < stripsize - 1;
-           j++, pos = pos + X) {
+      U32 pos = (y * stripsize + offset) * X + x;
+      for (DBL *ptr1 = Im + pos, *ptr2 = Re + pos, *ptr3 = intensity + pos;
+           ptr1 < Im + pos + (stripsize - 1) * X;
+           ptr1 = ptr1 + X, ptr2 = ptr2 + X, ptr3 = ptr3 + X) {
         // Q(m)I(m+1) - I(m)Q(m+1)
-        tmp_1 = tmp_1 + Im[pos] * Re[pos + X] - Re[pos] * Im[pos + X];
+        tmp_1 = tmp_1 + (*ptr1) * (*(ptr2 + X)) - (*ptr2) * (*(ptr1 + X));
         // Q(m)Q(m+1) + I(m)I(m+1)
-        tmp_2 = tmp_2 + Im[pos] * Im[pos + X] + Re[pos] * Re[pos + X];
+        tmp_2 = tmp_2 + (*ptr1) * (*(ptr1 + X)) + (*ptr2) * (*(ptr2 + X));
         // mean value
-        sum = sum + intensity[pos];
+        sum = sum + (*ptr3);
       }
       // fill out
-      if ((sum > _max) || (sum < _min)) out[y * X + x] = 0.0;
-      else out[y * X + x] = atan2(tmp_1, tmp_2);
+      if ((sum > _max) || (sum < _min))
+        *(out + y * X + x) = 0.0;
+      else
+        *(out + y * X + x) = atan2(tmp_1, tmp_2);
     }
   }  // end of parallel code
   return EXIT_SUCCESS;
