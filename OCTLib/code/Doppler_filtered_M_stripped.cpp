@@ -44,31 +44,28 @@ I8 OL_doppler_fltr_M(U32 X, U32 Y, U32 stripsize, U32 offset, DBL min, DBL max,
                      DBL *intensity, DBL *Re, DBL *Im, DBL *out) {
   // simple checks
   if (stripsize < 2) return EXIT_FAILURE;
-  I32 d = (Y - offset) / stripsize;
+  I32 x, y, d = (Y - offset) / stripsize;
   if (d < 2) return EXIT_FAILURE;
   DBL _max = max * (stripsize - 1), _min = min * (stripsize - 1);
-  I32 x, y;
   // parallel run by elements
   #pragma omp parallel for default(shared) private(x, y)
-  for (x = 0; x < static_cast<I32>(X); x++) {  // horizontal
-    for (y = 0; y < d; y++) {  // vertical
+  for (y = 0; y < d; y++) {  // vertical
+    for (x = 0; x < static_cast<I32>(X); x++) {  // horizontal
       DBL tmp_1 = 0.0, tmp_2 = 0.0, sum = 0.0;
-      U32 pos = (y * stripsize + offset) * X + x;
-      for (DBL *ptr1 = Im + pos, *ptr2 = Re + pos, *ptr3 = intensity + pos;
-           ptr1 < Im + pos + (stripsize - 1) * X;
-           ptr1 = ptr1 + X, ptr2 = ptr2 + X, ptr3 = ptr3 + X) {
+      for (U32 j = 0, pos = (y * stripsize + offset) * X + x; j < stripsize - 1;
+           j++, pos = pos + X) {
         // Q(m)I(m+1) - I(m)Q(m+1)
-        tmp_1 = tmp_1 + (*ptr1) * (*(ptr2 + X)) - (*ptr2) * (*(ptr1 + X));
+        tmp_1 = tmp_1 + Im[pos] * Re[pos + X] - Re[pos] * Im[pos + X];
         // Q(m)Q(m+1) + I(m)I(m+1)
-        tmp_2 = tmp_2 + (*ptr1) * (*(ptr1 + X)) + (*ptr2) * (*(ptr2 + X));
+        tmp_2 = tmp_2 + Im[pos] * Im[pos + X] + Re[pos] * Re[pos + X];
         // mean value
-        sum = sum + (*ptr3);
+        sum = sum + intensity[pos];
       }
       // fill out
       if ((sum > _max) || (sum < _min))
-        *(out + y * X + x) = 0.0;
+        out[y * X + x] = 0.0;
       else
-        *(out + y * X + x) = atan2(tmp_1, tmp_2);
+        out[y * X + x] = atan2(tmp_1, tmp_2);
     }
   }  // end of parallel code
   return EXIT_SUCCESS;
