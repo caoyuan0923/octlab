@@ -46,8 +46,8 @@ I8 OL_pearson_map(U32 X, U32 Y, U32 x_d, U32 y_d, DBL *in1, DBL *in2,
   if (size < 2) return EXIT_FAILURE;
   // parallel run by elements
   #pragma omp parallel for default(shared) private(x, y)
-  for (x = 0; x < d; x++) {  // horizontal
-    for (y = 0; y < static_cast<I32>(Y - y_d); y++) {  // vertical
+  for (y = 0; y < static_cast<I32>(Y - y_d); y++) {  // vertical
+    for (x = 0; x < d; x++) {  // horizontal
       DBL sum_x = 0.0, sum_y = 0.0, sumxy = 0.0, sumx2 = 0.0, sumy2 = 0.0;
       // loop for pearson
       for (U32 i = x; i < x_d + x; i++) {

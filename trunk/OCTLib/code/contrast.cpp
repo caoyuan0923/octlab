@@ -50,8 +50,8 @@ I8 OL_contrast_map(U32 X, U32 Y, U32 x_d, U32 y_d, DBL *in, DBL *out) {
   if (size < 2) return EXIT_FAILURE;
   // parallel run by elements
   #pragma omp parallel for default(shared) private(x, y)
-  for (x = 0; x < d; x++) {  // horizontal
-    for (y = 0; y < static_cast<I32>(Y - y_d); y++) {  // vertical
+  for (y = 0; y < static_cast<I32>(Y - y_d); y++) {  // vertical
+    for (x = 0; x < d; x++) {  // horizontal
       DBL mean = 0.0;
       // loop for mean
       for (U32 i = x; i < x_d + x; i++) {

@@ -45,8 +45,8 @@ I8 OL_contrast_map_fl_M(U32 X, U32 Y, U32 stripsize, U32 offset, DBL min,
   I32 x, y;
   // parallel run by elements
   #pragma omp parallel for default(shared) private(x, y)
-  for (x = 0; x < static_cast<I32>(X); x++) {  // horizontal
-    for (y = 0; y < d; y++) {  // vertical
+  for (y = 0; y < d; y++) {  // vertical
+    for (x = 0; x < static_cast<I32>(X); x++) {  // horizontal
       DBL mean = 0.0;
       // loop for mean
       for (U32 j = 0, pos = (y * stripsize + offset) * X + x; j < stripsize;

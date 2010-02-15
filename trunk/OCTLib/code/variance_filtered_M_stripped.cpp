@@ -46,8 +46,8 @@ I8 OL_variance_map_fl_M(U32 X, U32 Y, U32 stripsize, U32 offset, DBL min,
   I32 x, y;
   // parallel run by elements
   #pragma omp parallel for default(shared) private(x, y)
-  for (x = 0; x < static_cast<I32>(X); x++) {  // horizontal
-    for (y = 0; y < d; y++) {  // vertical
+  for (y = 0; y < d; y++) {  // vertical
+    for (x = 0; x < static_cast<I32>(X); x++) {  // horizontal
       DBL sum = 0.0, sum2 = 0.0;
       // loop for mean
       for (U32 j = 0, pos = (y * stripsize + offset) * X + x; j < stripsize;
@@ -58,8 +58,10 @@ I8 OL_variance_map_fl_M(U32 X, U32 Y, U32 stripsize, U32 offset, DBL min,
         sum2 = sum2 + in[pos] * in[pos];
       }
       // fill out
-      if ((sum > _max) || (sum < _min)) out[y * X + x] = 0.0;
-      else out[y * X + x] = (sum2 - sum * sum / stripsize) / (stripsize - 1);
+      if ((sum > _max) || (sum < _min))
+        out[y * X + x] = 0.0;
+      else
+        out[y * X + x] = (sum2 - sum * sum / stripsize) / (stripsize - 1);
     }
   }  // end of parallel code
   return EXIT_SUCCESS;
