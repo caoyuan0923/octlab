@@ -29,7 +29,12 @@
   #include <omp.h>
 #endif
 // need for built-in math functions
-#include <cmath>
+#ifdef __INTEL_COMPILER
+  #include <mathimf.h>
+  #define   abs   fabs
+#else
+  #include <cmath>
+#endif
 // need for STL algorithms
 #include <map>
 // common for c++
