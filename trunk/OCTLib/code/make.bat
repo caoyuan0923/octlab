@@ -5,7 +5,7 @@ set MYPROG=OCTLib
 set EXCLUDE.1=lin_regr
 set EXCLUDE.2=peak_width
 
-@call "%VS90COMNTOOLS%/vsvars32.bat"
+@call "%VS90COMNTOOLS%\vsvars32.bat"
 
 echo.
 

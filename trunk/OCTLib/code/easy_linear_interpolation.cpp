@@ -45,7 +45,7 @@ DllExport I8 OL_easy_linear_interpl(U32, U32, DBL, DBL, DBL *, DBL *);
 I8 OL_easy_linear_interpl(U32 X, U32 Y, DBL start_wavelength,
                           DBL end_wavelength, DBL *in, DBL *out) {
   I32 i, j;
-  I32 *li = new I32[X - 2];
+  I64 *li = new I64[X - 2];
   DBL *p = new DBL[X - 2];
   // linear wavelength step
   DBL wavelength_step = (end_wavelength - start_wavelength) / (X - 1);
@@ -57,7 +57,7 @@ I8 OL_easy_linear_interpl(U32 X, U32 Y, DBL start_wavelength,
     // nonlinear wavelength corresponding to linear wavenumber
     DBL nl = 1 / (start_wavenumber - wavenumber_step * i);
     // close linear wavelength (its index) from left side
-    li[i - 1] = static_cast<I32>(floor((nl - start_wavelength) / \
+    li[i - 1] = static_cast<I64>(floor((nl - start_wavelength) / \
                 wavelength_step));
     // the relative distance (in range 0...1) between linear and nonlinear
     // wavelengths calculated before

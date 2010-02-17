@@ -69,7 +69,7 @@ I8 OL_easy_lin_int_fft(U32 X, U32 Y, U32 start_index, U32 end_index,
                        DBL *Re, DBL *Im) {
   U32 size = end_index - start_index;
   DBL *hann_win = static_cast<DBL *>(fftw_malloc(sizeof(DBL) * size));
-  I32 *li = static_cast<I32 *>(fftw_malloc(sizeof(I32) * (size - 2)));
+  I64 *li = static_cast<I64 *>(fftw_malloc(sizeof(I64) * (size - 2)));
   DBL *p = static_cast<DBL *>(fftw_malloc(sizeof(DBL) * (size - 2)));
   // create FFTW plan
   fftw_plan fft_p = fftw_plan_r2r_1d(size, Re, Im, FFTW_R2HC, FFTW_ESTIMATE);
@@ -95,7 +95,7 @@ I8 OL_easy_lin_int_fft(U32 X, U32 Y, U32 start_index, U32 end_index,
     // nonlinear wavelength corresponding to linear wavenumber
     DBL nl = 1 / (start_wavenumber - wavenumber_step * i);
     // close linear wavelength (its index) from left side
-    li[i - 1] = static_cast<I32>(floor((nl - start_wavelength) / \
+    li[i - 1] = static_cast<I64>(floor((nl - start_wavelength) / \
                 wavelength_step));
     // the relative distance (in range 0...1) between linear and nonlinear
     // wavelengths calculated before

@@ -5,7 +5,7 @@ set MYPROG=OCTLib64
 set EXCLUDE.1=lin_regr
 set EXCLUDE.2=peak_width
 
-@call "C:\Program Files (x86)\Intel\Compiler\11.1\054\bin\iclvars.bat" intel64
+@call "%ICPP_COMPILER11%\bin\iclvars.bat" intel64
 
 echo.
 
