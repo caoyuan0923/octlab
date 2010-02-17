@@ -70,8 +70,6 @@ I8 OL_contrast_map(U32 X, U32 Y, U32 x_d, U32 y_d, DBL *in, DBL *out) {
         }
       }
       // fill out
-      // simple check
-      if (mean == 0.0) mean = 1.0;
       out[y * d + x] = sqrt(tmp / (size - 1)) / mean;
     }
   }  // end of parallel code

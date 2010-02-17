@@ -5,7 +5,7 @@ set MYPROG=OCTLib64
 set EXCLUDE.1=lin_regr
 set EXCLUDE.2=peak_width
 
-@call "c:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" amd64
+@call "%VS90COMNTOOLS%\..\..\VC\vcvarsall.bat" amd64
 
 echo.
 
