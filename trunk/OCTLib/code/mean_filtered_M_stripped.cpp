@@ -20,9 +20,8 @@ DllExport I8 OL_mean_map_fl_M(U32, U32, U32, U32, DBL, DBL, DBL *, DBL *);
 /* mean_map with filtering for M-stripped data main function
   PURPOSE:
     calculate speckle mean for B-scan stripped by M-mode strips, then filter
-    obtained variance values based on intensity information. If intensity is out
-    of defined range the variance value is zero. Read description for
-    variance.cpp file for more details.
+    obtained mean values based on intensity information. If intensity is out
+    of defined range the mean value is signed to max or min.
   
   INPUTS:
     X - number of elements in each row (A-scan size)
@@ -56,10 +55,15 @@ I8 OL_mean_map_fl_M(U32 X, U32 Y, U32 stripsize, U32 offset, DBL min, DBL max,
         sum = sum + in[pos];
       }
       // fill out
-      if ((sum > _max) || (sum < _min))
-        out[y * X + x] = 0.0;
-      else
-        out[y * X + x] = sum / stripsize;
+      if (sum > _max) {
+        out[y * X + x] = max;
+      } else {
+        if (sum < _min) {
+          out[y * X + x] = min;
+        } else {
+          out[y * X + x] = sum / stripsize;
+        }
+      }
     }
   }  // end of parallel code
   return EXIT_SUCCESS;
