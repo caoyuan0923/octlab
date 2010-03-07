@@ -1,7 +1,7 @@
 @echo off
 :: $Id$
 
-set MYPROG=OCTLib64
+set MYPROG=OCTLib_64
 set EXCLUDE.1=lin_regr
 set EXCLUDE.2=peak_width
 
