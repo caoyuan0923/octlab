@@ -49,6 +49,7 @@ const double kTwoPi = 6.28318530717958623;
 // define some type defs and variables
 // NOTE!!! avoid any defines in other source files!!!
 
+#if defined(_MSC_VER)
 typedef unsigned __int8      U8;   // 1 byte
 typedef unsigned __int16     U16;  // 2 bytes
 typedef unsigned __int32     U32;  // 4 bytes
@@ -57,6 +58,16 @@ typedef          __int8      I8;   // 1 byte
 typedef          __int16     I16;  // 2 bytes
 typedef          __int32     I32;  // 4 bytes
 typedef          __int64     I64;  // 8 bytes
+#else
+typedef         uint8_t      U8;   // 1 byte
+typedef         uint16_t     U16;  // 2 bytes
+typedef         uint32_t     U32;  // 4 bytes
+typedef         uint64_t     U64;  // 4 bytes
+typedef         int8_t       I8;   // 1 byte
+typedef         int16_t      I16;  // 2 bytes
+typedef         int32_t      I32;  // 4 bytes
+typedef         int64_t      I64;  // 8 bytes
+#endif
 typedef float                SGL;  // 4 bytes
 typedef double               DBL;  // 8 bytes
 typedef pair<DBL, I32>  DI_Pair;
