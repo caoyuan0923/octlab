@@ -13,6 +13,10 @@
 #include "./OCTLib.h"
 #include "./ver.h"
 
+#ifdef __GNUC__
+  #define sprintf_s snprintf
+#endif
+
 // for DLL export
 extern "C" {
 DllExport I8 OCTLibVer(char *str_name, char *str_ver);
