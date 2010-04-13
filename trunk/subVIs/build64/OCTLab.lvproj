@@ -226,12 +226,12 @@
 				<Property Name="IncludeError" Type="Bool">false</Property>
 				<Property Name="InstSpecBitness" Type="Str">64-bit</Property>
 				<Property Name="InstSpecVersion" Type="Str">9018011</Property>
-				<Property Name="LicenseFile" Type="Ref"></Property>
+				<Property Name="LicenseFile" Type="Ref">/My Computer/dll64/License.rtf</Property>
 				<Property Name="LV80Higher" Type="Bool">true</Property>
 				<Property Name="OSCheck" Type="Int">1</Property>
 				<Property Name="OSCheck_Vista" Type="Bool">true</Property>
 				<Property Name="ProductName" Type="Str">OCTLab</Property>
-				<Property Name="ProductVersion" Type="Str">0.8.5</Property>
+				<Property Name="ProductVersion" Type="Str">0.8.7</Property>
 				<Property Name="ReadmeFile" Type="Ref"></Property>
 				<Property Name="UpgradeCode" Type="Str">{BC41C66B-06D7-4CA2-A5EB-802537592260}</Property>
 				<Property Name="WindowMessage" Type="Str">C++ and LabView solution for Optical Coherence Tomography</Property>
