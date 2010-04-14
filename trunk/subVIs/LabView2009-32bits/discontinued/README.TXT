@@ -22,4 +22,4 @@ from Microsoft web-site if after running LabView asks for OpenMP DLL.
 NOTE! This sub-VIs and DLLs are NOT for 64-bit edition of LabView, but you can
 use LabView 32-bit edition without any problems with Windows 64-bit editions.
 
-NOTE! You should use polymorphic sub-VIs in bundle with OCTLab32.llb!
+NOTE! You should use polymorphic sub-VIs in bundle with OCTLab.llb!
