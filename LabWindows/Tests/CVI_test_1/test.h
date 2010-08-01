@@ -19,6 +19,9 @@
 #define  PANEL_TEXTSTRING                 3       /* control type: string, callback function: (none) */
 #define  PANEL_STOPBUTTON                 4       /* control type: textButton, callback function: (none) */
 #define  PANEL_STATUS                     5       /* control type: numeric, callback function: (none) */
+#define  PANEL_NAME                       6       /* control type: string, callback function: (none) */
+#define  PANEL_CNVSTATUS                  7       /* control type: string, callback function: (none) */
+#define  PANEL_LED                        8       /* control type: LED, callback function: (none) */
 
 
      /* Menu Bars, Menus, and Menu Items: */
