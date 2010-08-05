@@ -47,6 +47,9 @@ int CVICALLBACK AlazarAcquire (void *functionData)
     return FALSE;
   }
   
+  // init the value
+  alazarloop = 0;
+  
   // run until button STOP pressed
   while (stop == 0)
   {
@@ -62,17 +65,13 @@ int CVICALLBACK AlazarAcquire (void *functionData)
       );
     if (retCode == ApiSuccess)
     {
-      // wait for tread lock to freeze DataThread()
-      CmtGetLock (DataThreadLock);
-      
       // add acquired buffer to FIFO buffer and re-create memory space for next
-      // buffer from Alazar card
+      // buffer from Alazar card. After that notify DataThread() through event
       fifo_add (FIFOBuff, Buffer);
       Buffer = NULL;
+      alazarloop++;
+      SetEvent (eventData);
       Buffer = (U16 *) malloc (bytesPerBuffer);
-      
-      // release the lock to unfreeze DataThread()
-      CmtReleaseLock (DataThreadLock);
     }
     else if (retCode == ApiTransferComplete)
     {

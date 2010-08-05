@@ -39,6 +39,8 @@ int AlazarThreadId;
 CmtThreadLockHandle DataThreadLock;
 int DataThreadId;
 int status;
+HANDLE eventData;
+unsigned __int64 alazarloop;
 
 U32 rawAlineSize;     // Number of samples in a signle A-line
 U32 bytesPerSample;   // Size of a single sample in bytes

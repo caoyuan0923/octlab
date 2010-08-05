@@ -13,8 +13,8 @@
 
 int CVICALLBACK DataThread (void *functionData)
 {
-  char textline[4096];
-  volatile int stop = 0, loop = 0;
+  volatile int stop = 0;
+  unsigned __int64 loop = 0;
   U16 *data;
   
   // wait for tread lock
@@ -30,10 +30,8 @@ int CVICALLBACK DataThread (void *functionData)
   // run until button STOP pressed
   while (stop == 0)
   {
-    // wait for tread lock
-    CmtGetLock (DataThreadLock);
-    // release the lock
-    CmtReleaseLock (DataThreadLock);
+    // wait for event from AlazarAcquire()
+    WaitForSingleObject (eventData, INFINITE);
     
     // check button STOP
     GetCtrlVal (panelHandle, PANEL_STOPBUTTON, &stop);
@@ -42,8 +40,9 @@ int CVICALLBACK DataThread (void *functionData)
     while (FIFOBuff->f_head != FIFOBuff->f_tail)
     {
       data = fifo_remove (FIFOBuff);
-      sprintf (textline, "%i, %i\n", loop++, stop);
-      SetCtrlVal (panelHandle, PANEL_ERRORMSG, textline);
+      SetCtrlAttribute (panelHandle, PANEL_DATALOOPS, ATTR_CTRL_VAL, loop++);
+      SetCtrlAttribute (panelHandle, PANEL_ALAZARLOOPS, ATTR_CTRL_VAL,
+        alazarloop);
       free (data);
     }
     

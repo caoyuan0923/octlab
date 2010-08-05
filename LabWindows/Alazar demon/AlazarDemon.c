@@ -27,6 +27,9 @@ int main (int argc, char *argv[])
   // for DataThread() thread
   CmtNewLock ("", 0, &DataThreadLock);
   CmtGetLock (DataThreadLock);
+  
+  // create Windows Event variable
+  eventData = CreateEvent (NULL, FALSE, FALSE, NULL);
     
   /* Schedule thread functions */
   CmtScheduleThreadPoolFunction (DEFAULT_THREAD_POOL_HANDLE, AlazarAcquire,
