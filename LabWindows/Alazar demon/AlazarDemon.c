@@ -1,0 +1,142 @@
+/*******************************************************************************
+*  $Id$
+*  Copyright (C) 2010 OCTLab Project
+*  All rights reserved.
+*  web-site: www.OCTLab.org
+*  *****                              *******                              *****
+*  Use of this source code is governed by a Clear BSD-style license that can be
+*  found on the http://octlab.googlecode.com/svn/trunk/COPYRIGHT.TXT web-page or
+*  in the COPYRIGHT.TXT file
+*******************************************************************************/
+
+#include "AlazarThread.h"
+
+// main thread that asists UI
+int main (int argc, char *argv[])
+{
+  // load UI panel
+  if (InitCVIRTE (0, argv, 0) == 0)
+    return -1;  /* out of memory */
+  if ((panelHandle = LoadPanel (0, "AlazarDemon.uir", PANEL)) < 0)
+    return -1;
+  
+  // Create and get a thread locks
+  // for AlazarAcquire() thread.
+  CmtNewLock ("", 0, &AlazarThreadLock);
+  CmtGetLock (AlazarThreadLock);
+  // for DataThread() thread
+  CmtNewLock ("", 0, &DataThreadLock);
+  CmtGetLock (DataThreadLock);
+    
+  /* Schedule thread functions */
+  CmtScheduleThreadPoolFunction (DEFAULT_THREAD_POOL_HANDLE, AlazarAcquire,
+    NULL, &AlazarThreadId);
+  CmtScheduleThreadPoolFunction (DEFAULT_THREAD_POOL_HANDLE, DataThread, NULL,
+    &DataThreadId);
+  
+  // set status
+  status = 0; // run user interface
+  SetCtrlVal (panelHandle, PANEL_STATUS, status);
+  
+  // run UI
+  DisplayPanel (panelHandle);
+  RunUserInterface ();
+  
+  // close UI
+  DiscardPanel (panelHandle);
+  CloseCVIRTE ();
+  return 0;
+}
+
+// quit UI
+int CVICALLBACK PanelCB (int panel, int event, void *callbackData,
+    int eventData1, int eventData2)
+{
+  switch (event)
+  {
+    case EVENT_GOT_FOCUS:
+
+      break;
+    case EVENT_LOST_FOCUS:
+
+      break;
+    case EVENT_CLOSE:
+      SetCtrlVal (panelHandle, PANEL_ERRORMSG, "Bye! Let stop!\n");
+      Delay (1.0);
+      QuitUserInterface (0);
+
+      break;
+  }
+  return 0;
+}
+
+// run application
+int CVICALLBACK RunCB (int panel, int control, int event,
+    void *callbackData, int eventData1, int eventData2)
+{
+  switch (event)
+  {
+    case EVENT_COMMIT:
+      
+      // prevent from second run
+      SetCtrlAttribute (panelHandle, PANEL_RUNBUTTON, ATTR_DIMMED, 1);
+      
+      // get number of Alazar card systems
+      U32 systemCount = AlazarNumOfSystems ();
+      if (systemCount != 1) {
+        SetCtrlVal (panelHandle, PANEL_ERRORMSG,
+          "Ooops! The number of systems is not equal to 1!\n");
+        return 0;
+      } else {
+        SetCtrlAttribute (panelHandle, PANEL_SYSTEMCOUNT, ATTR_CTRL_VAL,
+          systemCount);
+      }
+      
+      // get number of boards within first system
+      U32 boardCount = AlazarBoardsInSystemBySystemID (1);
+      if (boardCount != 1) {
+        SetCtrlVal (panelHandle, PANEL_ERRORMSG,
+          "Ooops! The number of boards is not equal to 1!\n");
+        return 0;
+      } else {
+        SetCtrlAttribute (panelHandle, PANEL_BOARDNUMBER, ATTR_CTRL_VAL,
+          boardCount);
+      }
+      
+      // Get a handle to the first board of first system
+      boardHandle = AlazarGetBoardBySystemID (1, 1);
+      if (boardHandle == NULL) {
+        SetCtrlVal (panelHandle, PANEL_ERRORMSG,
+          "Ooops! Could not get the handle for board!\n");
+        return 0;
+      } else {
+        SetCtrlVal (panelHandle, PANEL_ERRORMSG,
+          "Nice! The board handle is ok!\n");
+      }
+      
+      // Toggle the LED on the board’s PCI/PCIe mounting bracket
+      AlazarSetLED (boardHandle, LED_ON);
+      Delay (0.5);
+      AlazarSetLED (boardHandle, LED_OFF);
+      
+      // init the board
+      if (! AlazarInit ())
+      {
+        SetCtrlVal (panelHandle, PANEL_ERRORMSG,
+          "Ooops! The AlazarInit() failed!\n");
+        return 0;
+      }
+      
+      // set status
+      status = 1; // exit RunCB()
+      SetCtrlVal (panelHandle, PANEL_STATUS, status);
+      // unfreeze AlazarAcquire() thread
+      CmtReleaseLock (AlazarThreadLock);
+      // unfreeze DataThread() thread
+      Delay (0.1);
+      CmtReleaseLock (DataThreadLock);
+
+      break;
+  }
+  return 0;
+}
