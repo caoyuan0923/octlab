@@ -48,6 +48,7 @@ U32 rawBscanSize;     // Number of A-lines in a B-scan
 U32 bytesPerBuffer;   // Size of buffer for 2 channels
 U16 *Buffer;          // DMA Memory Buffer
 
+double TimerValue;
 
 #ifdef __cplusplus
     }
