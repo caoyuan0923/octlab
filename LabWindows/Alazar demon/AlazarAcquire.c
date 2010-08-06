@@ -19,6 +19,7 @@ int CVICALLBACK AlazarAcquire (void *functionData)
   BOOL success = TRUE;
   RETURN_CODE retCode;
   U32 timeout_ms = 5000;
+  double initialTime = 0.0;
   
   // wait for tread lock
   CmtGetLock (AlazarThreadLock);
@@ -47,12 +48,15 @@ int CVICALLBACK AlazarAcquire (void *functionData)
     return FALSE;
   }
   
-  // init the value
+  // init the values
   alazarloop = 0;
+  initialTime = Timer ();
   
   // run until button STOP pressed
   while (stop == 0)
   {
+    double tempTime = Timer ();
+    
     // check button STOP
     GetCtrlVal (panelHandle, PANEL_STOPBUTTON, &stop);
   
@@ -72,6 +76,8 @@ int CVICALLBACK AlazarAcquire (void *functionData)
       alazarloop++;
       SetEvent (eventData);
       Buffer = (U16 *) malloc (bytesPerBuffer);
+      TimerValue = tempTime - initialTime;
+      initialTime = tempTime;
     }
     else if (retCode == ApiTransferComplete)
     {

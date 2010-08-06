@@ -308,6 +308,10 @@ BOOL AlazarInit (void)
     &rawBscanSize);
   SetCtrlAttribute (panelHandle, PANEL_RAWBLINESIZE, ATTR_DIMMED, 1);
   
+  // limit the number of A-lines for PANEL_ALINEINDEX control
+  SetCtrlAttribute (panelHandle, PANEL_ALINEINDEX, ATTR_MAX_VALUE,
+    rawBscanSize - 1);
+  
   // check that B-scan fits on-board memory
   if ((rawAlineSize * rawBscanSize) > maxSamplesPerChannel)
   {
