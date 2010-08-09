@@ -24,31 +24,35 @@
 #include "AlazarDemon.h"
 #include "rsmfifo.h"
 
-BOOL AlazarInit (void);
-int CVICALLBACK AlazarAcquire (void *);
-int CVICALLBACK DataThread (void *);
-void fifo_add (fifo_t *, void *);
-void *fifo_remove (fifo_t *);
+// function prototypes
+BOOL AlazarInit (void);                 // initialization of Alazar card
+int CVICALLBACK AlazarAcquire (void *); // acquisition of Alazar card
+int CVICALLBACK DataThread (void *);    // data processing through FIFO queue
+void FIFO_Add (fifo_t *, void *);       // add buffer to FIFO queue
+void *FIFO_Remove (fifo_t *);           // remove buffer from FIFO queue
 
-  
-int panelHandle;
-HANDLE boardHandle;
+int panelHandle;    // global handle for UI panel
+HANDLE boardHandle; // global handle for Alazar card
+volatile int stop;  // global flag for pressed STOP button
+unsigned int channel; // global variable for channel selection
+unsigned int aLineIndex; // global variable for ALine selection
 
-CmtThreadLockHandle AlazarThreadLock;
-int AlazarThreadId;
-CmtThreadLockHandle DataThreadLock;
-int DataThreadId;
-int status;
-HANDLE eventData;
-unsigned __int64 alazarloop;
+// for thread management
+CmtThreadLockHandle alazarThreadLock; // lock to control AlazarAcquire() startup
+int alazarThreadId;                   // ID of AlazarAcquire()
+CmtThreadLockHandle dataThreadLock;   // lock to control DataThread() startup
+int dataThreadId;                     // ID of DataThread()
+int status;                           // status of whole application
+HANDLE eventData;                     // handle for event
+unsigned __int64 alazarLoop;          // number of buffers acquired by Alazar
+double timerValue;                    // the time period for each Alazar
+                                      // acquisition
 
 U32 rawAlineSize;     // Number of samples in a signle A-line
 U32 bytesPerSample;   // Size of a single sample in bytes
 U32 rawBscanSize;     // Number of A-lines in a B-scan
 U32 bytesPerBuffer;   // Size of buffer for 2 channels
-U16 *Buffer;          // DMA Memory Buffer
-
-double TimerValue;
+U16 *frameBuffer;     // DMA Memory Buffer
 
 #ifdef __cplusplus
     }

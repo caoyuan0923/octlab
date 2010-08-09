@@ -22,20 +22,23 @@ int main (int argc, char *argv[])
   
   // Create and get a thread locks
   // for AlazarAcquire() thread.
-  CmtNewLock ("", 0, &AlazarThreadLock);
-  CmtGetLock (AlazarThreadLock);
+  CmtNewLock ("", 0, &alazarThreadLock);
+  CmtGetLock (alazarThreadLock);
   // for DataThread() thread
-  CmtNewLock ("", 0, &DataThreadLock);
-  CmtGetLock (DataThreadLock);
+  CmtNewLock ("", 0, &dataThreadLock);
+  CmtGetLock (dataThreadLock);
+  
+  // set stop flag
+  stop = 0;
   
   // create Windows Event variable
   eventData = CreateEvent (NULL, FALSE, FALSE, NULL);
     
   /* Schedule thread functions */
   CmtScheduleThreadPoolFunction (DEFAULT_THREAD_POOL_HANDLE, AlazarAcquire,
-    NULL, &AlazarThreadId);
+    NULL, &alazarThreadId);
   CmtScheduleThreadPoolFunction (DEFAULT_THREAD_POOL_HANDLE, DataThread, NULL,
-    &DataThreadId);
+    &dataThreadId);
   
   // set status
   status = 0; // run user interface
@@ -134,10 +137,10 @@ int CVICALLBACK RunCB (int panel, int control, int event,
       status = 1; // exit RunCB()
       SetCtrlVal (panelHandle, PANEL_STATUS, status);
       // unfreeze AlazarAcquire() thread
-      CmtReleaseLock (AlazarThreadLock);
+      CmtReleaseLock (alazarThreadLock);
       // unfreeze DataThread() thread
       Delay (0.1);
-      CmtReleaseLock (DataThreadLock);
+      CmtReleaseLock (dataThreadLock);
 
       break;
   }

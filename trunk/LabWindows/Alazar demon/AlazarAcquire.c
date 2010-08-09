@@ -14,17 +14,16 @@
 // thread to acquire Alazar card
 int CVICALLBACK AlazarAcquire (void *functionData)
 {
-  char textline[4096];
-  volatile int stop = 0;
+  char textLine[4096];
   BOOL success = TRUE;
   RETURN_CODE retCode;
   U32 timeout_ms = 5000;
   double initialTime = 0.0;
   
   // wait for tread lock
-  CmtGetLock (AlazarThreadLock);
+  CmtGetLock (alazarThreadLock);
   // release the lock
-  CmtReleaseLock (AlazarThreadLock);
+  CmtReleaseLock (alazarThreadLock);
   
   // create buffer
   FIFOBuff = (fifo_t *) malloc (sizeof (fifo_t));
@@ -41,54 +40,56 @@ int CVICALLBACK AlazarAcquire (void *functionData)
   retCode = AlazarStartCapture (boardHandle);
   if (retCode != ApiSuccess)
   {
-    sprintf (textline,
+    sprintf (textLine,
       "Error: AlazarStartCapture failed -- %s\n", AlazarErrorToText(retCode));
-    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textline);
+    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
     success = FALSE;
     return FALSE;
   }
   
   // init the values
-  alazarloop = 0;
+  alazarLoop = 0;
   initialTime = Timer ();
   
   // run until button STOP pressed
   while (stop == 0)
   {
+    // get the time
     double tempTime = Timer ();
     
-    // check button STOP
-    GetCtrlVal (panelHandle, PANEL_STOPBUTTON, &stop);
-  
     // wait for new Alazar card buffer
     retCode = AlazarWaitNextAsyncBufferComplete (
       boardHandle,
-      Buffer,
+      frameBuffer,
       bytesPerBuffer,
       timeout_ms
       );
-    if (retCode == ApiSuccess)
+    if (retCode == ApiSuccess) // everything is ok
     {
       // add acquired buffer to FIFO buffer and re-create memory space for next
       // buffer from Alazar card. After that notify DataThread() through event
-      fifo_add (FIFOBuff, Buffer);
-      Buffer = NULL;
-      alazarloop++;
-      SetEvent (eventData);
-      Buffer = (U16 *) malloc (bytesPerBuffer);
-      TimerValue = tempTime - initialTime;
-      initialTime = tempTime;
+      FIFO_Add (FIFOBuff, frameBuffer);
+      frameBuffer = NULL;
+      alazarLoop++;
+      SetEvent (eventData); // DataThread() can run now
+      frameBuffer = (U16 *) malloc (bytesPerBuffer); // allocate memory for the next
+                                                // buffer from Alazar card
+      timerValue = tempTime - initialTime; // calculate time period for current
+                                           // loop
+      initialTime = tempTime;              // remember time value for next
+                                           // iteration
     }
-    else if (retCode == ApiTransferComplete)
+    else if (retCode == ApiTransferComplete) // we never come here but reserve 
+                                             // for future use
     {
       // This buffer is full, and it's the last buffer in the acquisition
     }
-    else
+    else // Ooops! we have error!
     {
-      sprintf (textline,
+      sprintf (textLine,
         "Error: AlazarWaitNextAsyncBufferComplete failed -- %s\n",
         AlazarErrorToText(retCode));
-      SetCtrlVal (panelHandle, PANEL_ERRORMSG, textline);
+      SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
       Delay (5.0);
       return FALSE;
     }

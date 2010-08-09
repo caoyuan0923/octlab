@@ -48,14 +48,14 @@
 #define  PANEL_TRIGSLOPE1                 32      /* control type: ring, callback function: (none) */
 #define  PANEL_RANGEIDEXTTRIG             33      /* control type: ring, callback function: (none) */
 #define  PANEL_MODE                       34      /* control type: ring, callback function: (none) */
-#define  PANEL_STOPBUTTON                 35      /* control type: textButton, callback function: (none) */
+#define  PANEL_STOPBUTTON                 35      /* control type: textButton, callback function: StopCB */
 #define  PANEL_STATUS                     36      /* control type: numeric, callback function: (none) */
 #define  PANEL_RAWBLINESIZE               37      /* control type: numeric, callback function: (none) */
-#define  PANEL_ALINEINDEX                 38      /* control type: numeric, callback function: (none) */
+#define  PANEL_ALINEINDEX                 38      /* control type: numeric, callback function: ALineCB */
 #define  PANEL_RAWALINESIZE               39      /* control type: numeric, callback function: (none) */
 #define  PANEL_ERRORMSG                   40      /* control type: textBox, callback function: (none) */
 #define  PANEL_ALINEGRAPH                 41      /* control type: graph, callback function: (none) */
-#define  PANEL_CHANNELSWITCH              42      /* control type: binary, callback function: (none) */
+#define  PANEL_CHANNELSWITCH              42      /* control type: binary, callback function: ChannelCB */
 
 
      /* Menu Bars, Menus, and Menu Items: */
@@ -65,8 +65,11 @@
 
      /* Callback Prototypes: */
 
+int  CVICALLBACK ALineCB(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
+int  CVICALLBACK ChannelCB(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK PanelCB(int panel, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK RunCB(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
+int  CVICALLBACK StopCB(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 
 
 #ifdef __cplusplus
