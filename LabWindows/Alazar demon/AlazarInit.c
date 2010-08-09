@@ -15,7 +15,7 @@
 BOOL AlazarInit (void)
 {
   RETURN_CODE retCode; // return code for native Alazar functions
-  char textline[4096]; // variable for text messages
+  char textLine[4096]; // variable for text messages
 
   // local variables
   U32 clockSource = 0;
@@ -68,9 +68,9 @@ BOOL AlazarInit (void)
       );                  
   if (retCode != ApiSuccess)
   {
-    sprintf (textline, "Error: AlazarSetCaptureClock failed -- %s\n",
+    sprintf (textLine, "Error: AlazarSetCaptureClock failed -- %s\n",
       AlazarErrorToText(retCode));
-    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textline);
+    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
     return FALSE;
   }
   
@@ -98,9 +98,9 @@ BOOL AlazarInit (void)
       );
   if (retCode != ApiSuccess)
   {
-    sprintf (textline, "Error: AlazarInputControl failed -- %s\n",
+    sprintf (textLine, "Error: AlazarInputControl failed -- %s\n",
       AlazarErrorToText(retCode));
-    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textline);
+    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
     return FALSE;
   }
 
@@ -113,9 +113,9 @@ BOOL AlazarInit (void)
       );
   if (retCode != ApiSuccess)
   {
-    sprintf (textline,"Error: AlazarSetBWLimit failed -- %s\n",
+    sprintf (textLine,"Error: AlazarSetBWLimit failed -- %s\n",
       AlazarErrorToText(retCode));
-    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textline);
+    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
     return FALSE;
   }
 
@@ -143,9 +143,9 @@ BOOL AlazarInit (void)
       );
   if (retCode != ApiSuccess)
   {
-    sprintf (textline,"Error: AlazarInputControl failed -- %s\n",
+    sprintf (textLine,"Error: AlazarInputControl failed -- %s\n",
       AlazarErrorToText(retCode));
-    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textline);
+    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
     return FALSE;
   }
 
@@ -158,9 +158,9 @@ BOOL AlazarInit (void)
       );
   if (retCode != ApiSuccess)
   {
-    sprintf (textline,"Error: AlazarSetBWLimit failed -- %s\n",
+    sprintf (textLine,"Error: AlazarSetBWLimit failed -- %s\n",
       AlazarErrorToText(retCode));
-    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textline);
+    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
     return FALSE;
   }
   
@@ -209,9 +209,9 @@ BOOL AlazarInit (void)
       );
   if (retCode != ApiSuccess)
   {
-    sprintf (textline,"Error: AlazarSetTriggerOperation failed -- %s\n",
+    sprintf (textLine,"Error: AlazarSetTriggerOperation failed -- %s\n",
         AlazarErrorToText(retCode));
-    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textline);
+    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
     return FALSE;
   }
   
@@ -230,9 +230,9 @@ BOOL AlazarInit (void)
       );
   if (retCode != ApiSuccess)
   {
-    sprintf (textline,"Error: AlazarSetExternalTrigger failed -- %s\n",
+    sprintf (textLine,"Error: AlazarSetExternalTrigger failed -- %s\n",
       AlazarErrorToText(retCode));
-    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textline);
+    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
     return FALSE;
   }
 
@@ -241,9 +241,9 @@ BOOL AlazarInit (void)
   retCode = AlazarSetTriggerDelay (boardHandle, triggerDelay);
   if (retCode != ApiSuccess)
   {
-    sprintf (textline,"Error: AlazarSetTriggerDelay failed -- %s\n",
+    sprintf (textLine,"Error: AlazarSetTriggerDelay failed -- %s\n",
       AlazarErrorToText(retCode));
-    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textline);
+    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
     return FALSE;
   }
 
@@ -256,9 +256,9 @@ BOOL AlazarInit (void)
       );
   if (retCode != ApiSuccess)
   {
-    sprintf (textline,"Error: AlazarSetTriggerTimeOut failed -- %s\n",
+    sprintf (textLine,"Error: AlazarSetTriggerTimeOut failed -- %s\n",
       AlazarErrorToText(retCode));
-    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textline);
+    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
     return FALSE;
   }
 
@@ -273,9 +273,9 @@ BOOL AlazarInit (void)
       );  
   if (retCode != ApiSuccess)
   {
-    sprintf (textline,"Error: AlazarConfigureAuxIO failed -- %s\n",
+    sprintf (textLine,"Error: AlazarConfigureAuxIO failed -- %s\n",
       AlazarErrorToText(retCode));
-    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textline);
+    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
     return FALSE;
   }
   
@@ -290,9 +290,9 @@ BOOL AlazarInit (void)
     &bitsPerSample);
   if (retCode!= ApiSuccess)
   { 
-    sprintf (textline,"Error: AlazargetChannelInfo failed -- %s\n",
+    sprintf (textLine,"Error: AlazargetChannelInfo failed -- %s\n",
       AlazarErrorToText(retCode));
-    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textline);
+    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
     return FALSE;
   }
   SetCtrlAttribute (panelHandle, PANEL_MAXSAMPLESPERCHANNEL, ATTR_CTRL_VAL,
@@ -332,11 +332,11 @@ BOOL AlazarInit (void)
   
   // Allocate memory for DMA buffers
   success = TRUE;
-  Buffer = (U16 *) malloc (bytesPerBuffer);
-  if (Buffer == NULL)
+  frameBuffer = (U16 *) malloc (bytesPerBuffer);
+  if (frameBuffer == NULL)
   {
-    sprintf (textline,"Error: alloc %d bytes failed\n", bytesPerBuffer);
-    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textline);
+    sprintf (textLine,"Error: alloc %d bytes failed\n", bytesPerBuffer);
+    SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
     success = FALSE;
     return FALSE;
   }
@@ -352,9 +352,9 @@ BOOL AlazarInit (void)
       );
     if (retCode != ApiSuccess)
     {
-       sprintf (textline,"Error: AlazarSetRecordSize failed -- %s\n",
+       sprintf (textLine,"Error: AlazarSetRecordSize failed -- %s\n",
          AlazarErrorToText(retCode));
-       SetCtrlVal (panelHandle, PANEL_ERRORMSG, textline);
+       SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
        success = FALSE;
        return FALSE;
     }
@@ -387,9 +387,9 @@ BOOL AlazarInit (void)
         );
     if (retCode != ApiSuccess)
     {
-      sprintf (textline,"Error: AlazarBeforeAsyncRead failed -- %s\n",
+      sprintf (textLine,"Error: AlazarBeforeAsyncRead failed -- %s\n",
         AlazarErrorToText(retCode));
-      SetCtrlVal (panelHandle, PANEL_ERRORMSG, textline);
+      SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
       success = FALSE;
       return FALSE;
     }

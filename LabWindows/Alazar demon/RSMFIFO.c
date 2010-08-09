@@ -13,7 +13,7 @@
 
 // FIFO functions
 // Add to the end of the FIFO buffer
-void fifo_add (fifo_t *f, void *data)
+void FIFO_Add (fifo_t *f, void *data)
 {
   fifonode_t *fn;
   
@@ -36,7 +36,7 @@ void fifo_add (fifo_t *f, void *data)
 }
 
 // Remove from the front of the FIFO buffer
-void * fifo_remove (fifo_t *f)
+void * FIFO_Remove (fifo_t *f)
 {
     fifonode_t *fn;
     void *data;
