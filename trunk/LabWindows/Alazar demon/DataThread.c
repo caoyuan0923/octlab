@@ -59,7 +59,7 @@ int CVICALLBACK DataThread (void *functionData)
         VAL_EMPTY_SQUARE, VAL_SOLID, 1, VAL_CYAN);
       
       // record files only if we have directory name in pathName variable
-      if (save == 2)
+      if ((save == 2) || (dataLoop < alazarLoop))
       {
         // set number of buffers which were saved
         SetCtrlAttribute (panelHandle, PANEL_DATALOOPS, ATTR_CTRL_VAL,
