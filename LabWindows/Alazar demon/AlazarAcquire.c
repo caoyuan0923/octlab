@@ -19,6 +19,7 @@ int CVICALLBACK AlazarAcquire (void *functionData)
   RETURN_CODE retCode;
   U32 timeout_ms = 5000;
   double initialTime = 0.0;
+  BOOL isFull = FALSE;
   
   // wait for tread lock
   CmtGetLock (alazarThreadLock);
@@ -66,14 +67,24 @@ int CVICALLBACK AlazarAcquire (void *functionData)
       );
     if (retCode == ApiSuccess) // everything is ok
     {
-      // add acquired buffer to FIFO buffer and re-create memory space for next
-      // buffer from Alazar card. After that notify DataThread() through event
-      FIFO_Add (FIFOBuff, frameBuffer);
-      frameBuffer = NULL;
-      alazarLoop++;
+      // pulsed mode of FIFO buffer adding
+      if (! isFull)
+      {
+        if (save == 2) alazarLoop++;
+        // add acquired buffer to FIFO buffer and recreate memory space for next
+        // buffer from Alazar card. After that notify DataThread() through event
+        FIFO_Add (FIFOBuff, frameBuffer);
+        frameBuffer = NULL;
+        // allocate memory for the next buffer from Alazar card
+        frameBuffer = (U16 *) malloc (bytesPerBuffer);
+        if ((alazarLoop - dataLoop) > maxNumOfFrames)
+        {
+          isFull = TRUE;
+          SetCtrlVal (panelHandle, PANEL_LED, isFull);
+        }
+      }
+      
       SetEvent (eventData); // DataThread() can run now
-      frameBuffer = (U16 *) malloc (bytesPerBuffer); // allocate memory for the next
-                                                // buffer from Alazar card
       timerValue = tempTime - initialTime; // calculate time period for current
                                            // loop
       initialTime = tempTime;              // remember time value for next

@@ -28,8 +28,11 @@ int main (int argc, char *argv[])
   CmtNewLock ("", 0, &dataThreadLock);
   CmtGetLock (dataThreadLock);
   
-  // set stop flag
+  // init values
   stop = 0;
+  save = 0;
+  channel = 0;
+  strcpy (pathName, "");
   
   // create Windows Event variable
   eventData = CreateEvent (NULL, FALSE, FALSE, NULL);
@@ -67,6 +70,7 @@ int CVICALLBACK PanelCB (int panel, int event, void *callbackData,
 
       break;
     case EVENT_CLOSE:
+      stop = 1;
       SetCtrlVal (panelHandle, PANEL_ERRORMSG, "Bye! Let stop!\n");
       Delay (1.0);
       QuitUserInterface (0);
@@ -88,25 +92,17 @@ int CVICALLBACK RunCB (int panel, int control, int event,
       SetCtrlAttribute (panelHandle, PANEL_RUNBUTTON, ATTR_DIMMED, 1);
       
       // get number of Alazar card systems
-      U32 systemCount = AlazarNumOfSystems ();
-      if (systemCount != 1) {
+      if (1 != AlazarNumOfSystems ()) {
         SetCtrlVal (panelHandle, PANEL_ERRORMSG,
           "Ooops! The number of systems is not equal to 1!\n");
         return 0;
-      } else {
-        SetCtrlAttribute (panelHandle, PANEL_SYSTEMCOUNT, ATTR_CTRL_VAL,
-          systemCount);
       }
       
       // get number of boards within first system
-      U32 boardCount = AlazarBoardsInSystemBySystemID (1);
-      if (boardCount != 1) {
+      if (1 != AlazarBoardsInSystemBySystemID (1)) {
         SetCtrlVal (panelHandle, PANEL_ERRORMSG,
           "Ooops! The number of boards is not equal to 1!\n");
         return 0;
-      } else {
-        SetCtrlAttribute (panelHandle, PANEL_BOARDNUMBER, ATTR_CTRL_VAL,
-          boardCount);
       }
       
       // Get a handle to the first board of first system

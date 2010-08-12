@@ -48,8 +48,8 @@ BOOL AlazarInit (void)
   U32 triggerTimeout = 0;
   U8 bitsPerSample;
   U32 maxSamplesPerChannel;
-  int value;
   BOOL success = TRUE;
+  size_t availablePhysical = 0;
   
   // Configure sample clock source, edge, and decimation
   GetCtrlAttribute (panelHandle, PANEL_CLOCKSOURCE, ATTR_CTRL_VAL, &clockSource);
@@ -335,11 +335,20 @@ BOOL AlazarInit (void)
   frameBuffer = (U16 *) malloc (bytesPerBuffer);
   if (frameBuffer == NULL)
   {
-    sprintf (textLine,"Error: alloc %d bytes failed\n", bytesPerBuffer);
+    sprintf (textLine, "Error: alloc %d bytes failed\n", bytesPerBuffer);
     SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
     success = FALSE;
     return FALSE;
   }
+  
+  // get amount of RAM available for application
+  GetMemoryInfo (NULL, NULL, NULL, NULL, &availablePhysical, NULL, NULL);
+  SetCtrlVal (panelHandle, PANEL_MAXMEMORY,
+    (double)availablePhysical/1073741824);
+  
+  // get maximum number of buffers inside FIFO queue
+  maxNumOfFrames = (U32)(0.7 * (double)availablePhysical/bytesPerBuffer);
+  SetCtrlVal (panelHandle, PANEL_MAXFRAMES, maxNumOfFrames);
   
   // Set the number of pre- and post-trigger samples per record
   if (success)
@@ -352,7 +361,7 @@ BOOL AlazarInit (void)
       );
     if (retCode != ApiSuccess)
     {
-       sprintf (textLine,"Error: AlazarSetRecordSize failed -- %s\n",
+       sprintf (textLine, "Error: AlazarSetRecordSize failed -- %s\n",
          AlazarErrorToText(retCode));
        SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
        success = FALSE;
@@ -387,17 +396,13 @@ BOOL AlazarInit (void)
         );
     if (retCode != ApiSuccess)
     {
-      sprintf (textLine,"Error: AlazarBeforeAsyncRead failed -- %s\n",
+      sprintf (textLine, "Error: AlazarBeforeAsyncRead failed -- %s\n",
         AlazarErrorToText(retCode));
       SetCtrlVal (panelHandle, PANEL_ERRORMSG, textLine);
       success = FALSE;
       return FALSE;
     }
   }
-       
-  // Get specified parameters
-  AlazarGetParameter (boardHandle, CHANNEL_A, GET_DATA_FORMAT, &value);
-  SetCtrlAttribute (panelHandle, PANEL_VALUE, ATTR_CTRL_VAL, value);
   
   return TRUE;
 }
