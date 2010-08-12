@@ -21,6 +21,7 @@
 #include "AlazarCmd.h"
 #include <utility.h>
 #include <ansi_c.h>
+#include <toolbox.h>
 #include "AlazarDemon.h"
 #include "rsmfifo.h"
 
@@ -34,8 +35,10 @@ void *FIFO_Remove (fifo_t *);           // remove buffer from FIFO queue
 int panelHandle;    // global handle for UI panel
 HANDLE boardHandle; // global handle for Alazar card
 volatile int stop;  // global flag for pressed STOP button
+volatile int save;  // global flag to save files
 unsigned int channel; // global variable for channel selection
 unsigned int aLineIndex; // global variable for ALine selection
+char pathName[MAX_PATHNAME_LEN]; // the path for directory to save files
 
 // for thread management
 CmtThreadLockHandle alazarThreadLock; // lock to control AlazarAcquire() startup
@@ -44,10 +47,14 @@ CmtThreadLockHandle dataThreadLock;   // lock to control DataThread() startup
 int dataThreadId;                     // ID of DataThread()
 int status;                           // status of whole application
 HANDLE eventData;                     // handle for event
-unsigned __int64 alazarLoop;          // number of buffers acquired by Alazar
+unsigned __int64 alazarLoop;          // number of buffers acquired by
+                                      // AlazarAcquire()
+unsigned __int64 dataLoop;            // number of buffers recorded by
+                                      // DataThread()
 double timerValue;                    // the time period for each Alazar
                                       // acquisition
 
+U32 maxNumOfFrames;   // Maximum number of frames allowed inside FIFO queue
 U32 rawAlineSize;     // Number of samples in a signle A-line
 U32 bytesPerSample;   // Size of a single sample in bytes
 U32 rawBscanSize;     // Number of A-lines in a B-scan
