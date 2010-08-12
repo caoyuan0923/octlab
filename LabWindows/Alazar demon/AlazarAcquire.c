@@ -79,6 +79,8 @@ int CVICALLBACK AlazarAcquire (void *functionData)
         frameBuffer = (U16 *) malloc (bytesPerBuffer);
         if ((alazarLoop - dataLoop) > maxNumOfFrames)
         {
+          status = 4; // Alazar stopped to update FIFO queue
+          SetCtrlVal (panelHandle, PANEL_STATUS, status);
           isFull = TRUE;
           SetCtrlVal (panelHandle, PANEL_LED, isFull);
         }
